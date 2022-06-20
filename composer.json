@@ -1,0 +1,29 @@
+{
+    "name": "danielribes/snakes-and-ladders",
+    "description": "Voxel Kata",
+    "require-dev": {
+        "behat/behat": "^3.10",
+        "phpunit/phpunit": "^9.5"
+    },
+    "license": "MIT",
+    "config": {
+        "bin-dir": "bin"
+      },
+    "authors": [
+        {
+            "name": "Daniel Ribes",
+            "email": "daniel@danielribes.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "SnakesAndLadders\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SnakesAndLadders\\Tests\\": "tests/"
+        }
+    }
+}
