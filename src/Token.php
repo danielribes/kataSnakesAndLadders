@@ -1,19 +1,24 @@
 <?php
+/**
+ * This class moves the player token
+ */
 
 namespace SnakesAndLadders;
 
 class Token
 {
     private $position;
+    private $oldposition;
 
-    public function __construct()
+    public function __construct($firstposition)
     {
-        $this->position = 1;
+        $this->position = $firstposition;
     }
 
-    public function moveTo($squares)
+    public function moveTo($positions)
     {
-        $this->position += $squares;
+        $this->position += $positions;
+
     }
 
     public function getPosition()
@@ -21,5 +26,15 @@ class Token
         return $this->position;
     }
 
+    public function setPosition($newposition)
+    {
+        $this->oldposition = $this->position;
+        $this->position = $newposition;
+    }
+
+    public function getOldPosition()
+    {
+        return $this->oldposition;
+    }
 
 }

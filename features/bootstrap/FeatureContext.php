@@ -8,6 +8,7 @@ use PHPUnit\Framework\Assert;
 
 use SnakesAndLadders\Game;
 use SnakesAndLadders\Token;
+use SnakesAndLadders\Player;
 
 /**
  * Defines application features from the specific context.
@@ -40,7 +41,7 @@ class FeatureContext implements Context
      */
     public function theTokenIsPlacedOnTheBoard()
     {
-        Assert::assertInstanceOf("SnakesAndLadders\\Token", $this->game->token);
+        Assert::assertInstanceOf("SnakesAndLadders\\Token", $this->game->player->getToken());
     }
 
     /**
@@ -51,10 +52,11 @@ class FeatureContext implements Context
         if(!isset($this->game))
         {
             $this->game = new Game();
-            $this->game->token->moveTo($arg1-1);
+            $this->game->player->moveTo($arg1-1);
+            $this->game->checkPlayer($this->game->player);
         }
 
-        Assert::assertEquals($arg1, $this->game->token->getPosition());
+        Assert::assertEquals($arg1, $this->game->player->getActualSquare());
     }
 
     /**
@@ -62,7 +64,8 @@ class FeatureContext implements Context
      */
     public function theTokenIsMovedSpaces($arg1)
     {
-        $this->game->token->moveTo($arg1);
+        $this->game->player->moveTo($arg1);
+        $this->game->checkPlayer($this->game->player);
     }
 
     /**
@@ -70,7 +73,7 @@ class FeatureContext implements Context
      */
     public function thenItIsMovedSpaces($arg1)
     {
-        $this->game->token->moveTo($arg1);
+        $this->game->player->moveTo($arg1);
     }
 
     /**
@@ -78,7 +81,7 @@ class FeatureContext implements Context
      */
     public function thePlayerHasWonTheGame()
     {
-        throw new PendingException();
+        Assert::assertTrue($this->game->player->getWin());
     }
 
     /**
@@ -86,6 +89,6 @@ class FeatureContext implements Context
      */
     public function thePlayerHasNotWonTheGame()
     {
-        throw new PendingException();
+        Assert::assertFalse($this->game->player->getWin());
     }
 }
