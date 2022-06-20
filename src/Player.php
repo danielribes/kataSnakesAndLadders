@@ -6,16 +6,19 @@
 namespace SnakesAndLadders;
 
 use SnakesAndLadders\Token;
+use SnakesAndLadders\Dice;
 
 class Player
 {
     private $token;
     private $hasWin;
+    private $dice;
 
     public function __construct()
     {
         $this->token = new Token(1);
         $this->hasWin = false;
+        $this->dice = new Dice(); 
     }
 
     public function getToken()
@@ -30,7 +33,8 @@ class Player
 
     public function moveTo($positions)
     {
-        $newposition = $this->token->getPosition() + $positions;        $this->token->setPosition($newposition);
+        $newposition = $this->token->getPosition() + $positions;
+        $this->token->setPosition($newposition);
     }
 
     public function setWin()
@@ -53,5 +57,14 @@ class Player
         return $this->token->getOldPosition();
     }
 
+    public function getDice()
+    {
+        return $this->dice;
+    }
+
+    public function rollsADie()
+    {
+        return $this->dice->roll();
+    }
 
 }
