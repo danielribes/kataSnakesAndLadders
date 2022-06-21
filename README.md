@@ -26,7 +26,7 @@ Para su funcionamiento, a parte de las dependencias especificas del proyecto y d
 
 Para facilitar las cosas he configurado un Dockerfile poder ejecutar un contenedor Docker que lo incluye todo. Este Dockerfile monta un contenedor con PHP 7.4, composer, vim, clona el proyecto con sus dependencias y lo deja listo para lanzar los test y evaluar su funcionamiento. Sin implicaciones en el sistema anfitrión más que disponer de _git_ y _Docker_ instalado.
 
-Si no tienes docker en tu sistema lo puedes instalar con estas instrucciones ()()
+Si no tienes docker en tu sistema lo puedes instalar [con estas instrucciones](https://docs.docker.com/get-docker/) 
 
 ## Ejecutar el Docker y arrancar el entorno
 
