@@ -59,7 +59,7 @@ Puedes listar los contenidos de este directorio para confirmar:
 root@3679266af703:/usr/local/src# ls -la
 ````
 
-Veras algo así:
+Verás algo así:
 
 ````
 drwxr-xr-x  1 root root   4096 Jun 21 06:28 .
