@@ -6,7 +6,7 @@ En esta Kata se trata de resolver de manera progresiva 3 historias de usuario a 
 
 # Enfoque adoptado
 
-Aunque llevo unos mesos trasteando con C# por mi cuenta he preferido plantear la kata con **PHP** porque en estos momentos es mi lenguaje del dia a dia y me siento mas comodo con el.
+Aunque llevo unos mesos trasteando con C# por mi cuenta he preferido plantear la kata con **PHP** porque en estos momentos es mi lenguaje del día a día y me siento más comodo con él.
 
 Teniendo en cuenta que mandan las historias de usuario y que estas ya están descritas usando lenguaje **Gherkin** me ha parecido que lo más eficaz era usar un enfoque de testing basado en **BDD (Behavior Drive Development)** en el que las necesidades de negocio marcan el flujo de tests con los que se va diseñando la aplicación.
 
@@ -22,7 +22,7 @@ La solución usa además Composer que es un gestor de dependencias con el que se
 
 # Ejecutar el proyecto 
 
-Para su funcionamiento, a parte de las dependencias especificas del proyecto y del uso de composer es necesario disponer de PHP, minimo la versión CLI de PHP para ejecutarlo en un terminal.
+Para su funcionamiento, a parte de las dependencias especificas del proyecto y del uso de composer es necesario disponer de PHP, mínimo la versión CLI de PHP para ejecutarlo en un terminal.
 
 Para facilitar las cosas he configurado un Dockerfile poder ejecutar un contenedor Docker que lo incluye todo. Este Dockerfile monta un contenedor con PHP 7.4, composer, vim, clona el proyecto con sus dependencias y lo deja listo para lanzar los test y evaluar su funcionamiento. Sin implicaciones en el sistema anfitrión más que disponer de _git_ y _Docker_ instalado.
 
@@ -47,7 +47,7 @@ Esto inicializara el contenedor, puede tardar unos minutos, luego ejecuta:
 ```
 $ docker-compose run php /bin/bash
 ```
-Esto te abre una sesion SSH con el contenedor y te situa en el path donde esta clonado todo el proyecto con sus dependencias instaladas, veras algo así:
+Esto te abre una sesión SSH con el contenedor y te situa en el path donde esta clonado todo el proyecto con sus dependencias instaladas, verás algo así:
 
 ```
 root@3679266af703:/usr/local/src#
@@ -76,7 +76,7 @@ drwxr-xr-x  2 root root   4096 Jun 21 06:28 src
 drwxr-xr-x 16 root root   4096 Jun 21 06:28 vendor
 ````
 
-Aqui puedes ya ejecutar Behat para lanzar los tests y ver los resultados, con _bin/behat_:
+Aquí puedes ya ejecutar Behat para lanzar los tests y ver los resultados, con _bin/behat_:
 
 ```
 root@3679266af703:/usr/local/src# bin/behat
@@ -149,7 +149,7 @@ Ya tienes el entorno en funcionamiento y has podido comprobar que todos los test
 
 # Desarrollo de la Kata
 
-Los test de aceptación de cada historia de usuario guian la realización de esta kata. Las historias de usuario indican lo que se espera en cada fase y queda claro que se trata de implementar solo las funcionalidades requeridas por ellas. Ni una más ni una menos para tener en verde todos los tests.
+Los test de aceptación de cada historia de usuario guían la realización de esta kata. Las historias de usuario indican lo que se espera en cada fase y queda claro que se trata de implementar solo las funcionalidades requeridas por ellas. Ni una más ni una menos para tener en verde todos los tests.
 
 ## US 1 - Token Can Move Across the Board
 
@@ -178,19 +178,19 @@ Feature: US 1 - Token Can Move Across the Board
     Then the token is on square 8
 ````
 
-A partir de aqui Behat con:
+A partir de aquí Behat con:
 
 ````
 $ behat/bin --append-snippets
 ````
 
-Se generan automaticamente los metodos dentro de _bootstrap/FeatureContext.php_ que corresponden a cada linea _Given/When/And/Then_ de cada UAT. Los metodos estan vacios, solo actuan como punto de entrada, y se trata de ir un por uno aplicando el código necesario para pasar el test.
+Se generan automáticamente los métodos dentro de _bootstrap/FeatureContext.php_ que corresponden a cada linea _Given/When/And/Then_ de cada UAT. Los metodos estan vacios, solo actuan como punto de entrada, y se trata de ir un por uno aplicando el código necesario para pasar el test.
 
-El proceso es ejecutar _bin/behat_ ver todos los test en rojo, proceder a resolver UAT por UAT implementando el minimo código para pasar el test, tener test en verde y refactorizar. 
+El proceso es ejecutar _bin/behat_ ver todos los test en rojo, proceder a resolver UAT por UAT implementando el mínimo código para pasar el test, tener test en verde y refactorizar. 
 
-Estare repitiendo este ciclo durante las 3 user stories, y creando 3 ficheros .feature con las user stories y los test de aceptación, para que Behat los procese para ir ejecuntando los tests.
+Estare repitiendo este ciclo durante las 3 user stories, y creando 3 ficheros _.feature_ con las user stories y los test de aceptación, para que Behat los procese para ir ejecuntando los tests.
 
-En esta primera US veo necesario tener ya la class _Game_ que da sentido a _Given the game is started_ y sera el punto de inicio de cualquier partida. Aparece tambien la class _Token_ con la que moverse por el tablero.
+En esta primera US veo necesario tener ya la class _Game_ que da sentido a _Given the game is started_ y será el punto de inicio de cualquier partida. Aparece también la class _Token_ con la que moverse por el tablero.
 
 El juego y primer UAT empieza con:
 
@@ -218,9 +218,9 @@ public function theTokenIsPlacedOnTheBoard()
 ````
 ## US 2 - Player Can Win the Game
 
-Aqui la cosa ya se pone más interesante, _Player_ cobra más importancia en los test de aceptación de esta user story, por lo que decido crear una class _Player_ que es la que mantiene el _estado_ del jugador y a su vez lo mueve por el tablero mediante _Token_ Esto implica tambien refatorizar _Game_ para que haga una instancia de _Player_ en vez de _Token_ A partir de este momento el juego arranca con un _Player_ que a su vez dispone de su propio _Token_
+Aquí la cosa ya se pone más interesante, _Player_ cobra más importancia en los test de aceptación de esta user story, por lo que decido crear una class _Player_ que es la que mantiene el _estado_ del jugador y a su vez lo mueve por el tablero mediante _Token_ Esto implica también refactorizar _Game_ para que haga una instancia de _Player_ en vez de _Token_ A partir de este momento el juego arranca con un _Player_ que a su vez dispone de su propio _Token_
 
-_Game_ adquiere tambien más importancia concentro en ella las _reglas del juego_, el check de si el jugador gana o no.
+_Game_ adquiere también más importancia concentro en ella las _reglas del juego_, el check de si el jugador gana o no.
 
 ````php
 namespace SnakesAndLadders;
@@ -252,7 +252,7 @@ class Game
 }
 ````
 
-Esta combinación de _Game_/_Player_/_Token_ permite resolver los 2 test de aceptación y a la vez mantener responsabilidades separadas, mientras el resto de tests de la user story 1 se mantienen tambien en verde.
+Esta combinación de _Game_/_Player_/_Token_ permite resolver los 2 test de aceptación y a la vez mantener responsabilidades separadas, mientras el resto de tests de la user story 1 se mantienen también en verde.
 
 ## US 3 - Moves Are Determined By Dice Rolls
 
@@ -272,7 +272,7 @@ class Dice
 }
 ````
 
-Con esta _Dice_ donde el metodo _roll()_ devuelve un 4 ya se cumplen las condiciones de los tests relativas a los dados:
+Con esta _Dice_ donde el método _roll()_ devuelve un 4 ya se cumplen las condiciones de los tests relativas a los dados:
 * Then the result should be between 1-6 inclusive
 * Given the player rolls a 4
 
@@ -294,7 +294,7 @@ class Dice
 
 Ya que le da más sentido sin implicar código extra fuera de la petición de los tests de aceptación.
 
-Sigo usando _Asserts_ de PHPUnit para controlar resultados concretos dentro de un metodo que responde a una acción de un test de aceptación, por ejemplo si el valor de los dados esta dentro de un rango calculado:
+Sigo usando _Asserts_ de PHPUnit para controlar resultados concretos dentro de un método que responde a una acción de un test de aceptación, por ejemplo si el valor de los dados está dentro de un rango calculado:
 
 ````php
 /**
@@ -306,7 +306,7 @@ public function theResultShouldBeBetweenInclusive($arg1, $arg2)
     Assert::assertContains($this->diceresult, $sides);
 }
 ````
-O para confirmar que realmente el movimiento del token ha correspondido con el numero de pasos indicados por el dado:
+O para confirmar que realmente el movimiento del token ha correspondido con el número de pasos indicados por el dado:
 
 ````php
 /**
@@ -387,29 +387,29 @@ Feature: US 3 - Moves Are Determined By Dice Rolls
 
 # Posibles Mejoras
 
-* Commits más atomicos, a nivel de cada test de aceptación para tener más visibilidad en los cambios que implica un test concreto
+* Commits más atómicos, a nivel de cada test de aceptación para tener más visibilidad en los cambios que implica un test concreto
 
 * Refactorizar _Player_ y _Token_ desdel punto de vista que tienen algunas cosas parecidas y _Player_ ahora puede que incluso más responsabilidades de las que debe gestionar. La gestión del movimiento es un poco reiterativa entre ambas clases esto deberia revisarse.
 
-* Añadir test unitarios para algunos metodos en los que se realizan calculos concretos, como por ejemplo para cubrir el _moveTo()_ de _Player_
+* Añadir test unitarios para algunos métodos en los que se realizan cálculos concretos, como por ejemplo para cubrir el _moveTo()_ de _Player_
 
 
 # Pasos más adelante
 
-* No esta detallado en las historias de usuario de la Kata pero se podria terminar de implementar la lógica del juego, por ejemplo el control de si el token de un jugador cae en una casilla de escalera o de serpiente.
+* No está detallado en las historias de usuario de la Kata pero se podría terminar de implementar la lógica del juego, por ejemplo el control de si el token de un jugador cae en una casilla de escalera o de serpiente.
 
 * Añadir la posibilidad de múltiples jugadores. Esto teniendo la class _Player_ que gestiona individualmente a un jugador y su _Token_ sería viable gestionando, por ejemplo, en _Game_ a un array de objetos _Player_.
 
-* Explorar el uso de PHPSpec para usar la metodologia de _especificación mediante ejemplos_ que encaja con el uso de y Behat y permite un proceso completo de BDD. Pero para eso ya quizas mejor pasarse a C# ;) y explorar SpecFlow 
+* Explorar el uso de PHPSpec para usar la metodología de _especificación mediante ejemplos_ que encaja con el uso de Behat y permite un proceso completo de BDD. Pero para eso ya quizás mejor pasarse a C# ;) y explorar SpecFlow 
 
 
 # Conclusiones finales
 
 Me ha gustado esta kata. Obligarse a desarrollar unas funcionalidades sin salirse de lo que se pide en las historias de usuario y generando test de aceptación que dejan cubiertas todas la peticiones de negocio.
 
-Ha sido mi primera vez con Behat y un proceso muy basico de BDD. Así que me he concentrado en el uso de Behat a nivel metodologia, y en ir creando código que pasara los test de aceptación y ya esta. Tenia visto Behat, Gherkin y el concepto de tests orientado a funcionalidades pero no habia trabajado hasta ahora con el. Ver que la Kata apuntaba a este uso fue un reto interesante.
+Ha sido mi primera vez con Behat y un proceso muy básico de BDD. Así que me he concentrado en el uso de Behat a nivel metodología, y en ir creando código que pasara los test de aceptación y ya está. Tenía visto Behat, Gherkin y el concepto de tests orientado a funcionalidades pero no había trabajado hasta ahora con él. Ver que la Kata apuntaba a este uso fue un reto interesante.
 
 Cuando quieras podemos conversar en más detalle del enfoque de la Kata y ver en directo el funcionamiento del código :)
 
-Entregada esta versión en PHP creo que fuera de este proceso de selección y con más tiempo intentare repetirla con C# y SpecFlow, para comparar enfoques y sobretodo porque una buena manera de aprender un nuevo lenguaje es hacerlo a la vez guiado por tests. 
+Entregada esta versión en PHP creo que fuera de este proceso de selección y con más tiempo intentaré repetirla con C# y SpecFlow, para comparar enfoques y sobretodo porque una buena manera de aprender un nuevo lenguaje es hacerlo a la vez guiado por tests. 
 
