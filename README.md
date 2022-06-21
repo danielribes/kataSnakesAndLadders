@@ -47,28 +47,104 @@ Esto inicializara el contenedor, puede tardar unos minutos, luego ejecuta:
 ```
 $ docker-compose run php /bin/bash
 ```
-Esto te abre una sesion SSH con el contenedor y te situa en el path donde esta clonado todo el proyecto con sus dependencias instaladas, lo puedes confirmar con:
+Esto te abre una sesion SSH con el contenedor y te situa en el path donde esta clonado todo el proyecto con sus dependencias instaladas, veras algo así:
 
 ```
-$*** ls -la
-
---- mostra ---
+root@3679266af703:/usr/local/src#
 ````
 
-Aqui puedes ya ejecutar Behat para lanzar los tests y ver los resultados, con:
+Puedes listar los contenidos de este directorio para confirmar:
+
+````
+root@3679266af703:/usr/local/src# ls -la
+````
+
+Veras algo así:
+
+````
+drwxr-xr-x  1 root root   4096 Jun 21 06:28 .
+drwxr-xr-x  1 root root   4096 Jun  9 23:03 ..
+-rw-r--r--  1 root root   6148 Jun 21 06:28 .DS_Store
+drwxr-xr-x  8 root root   4096 Jun 21 06:28 .git
+-rw-r--r--  1 root root  14196 Jun 21 06:28 README.md
+drwxr-xr-x  2 root root   4096 Jun 21 06:28 bin
+-rw-r--r--  1 root root    596 Jun 21 06:28 composer.json
+-rw-r--r--  1 root root 139376 Jun 21 06:28 composer.lock
+drwxr-xr-x  3 root root   4096 Jun 21 06:28 features
+-rw-r--r--  1 root root    988 Jun 21 06:28 phpunit.xml
+drwxr-xr-x  2 root root   4096 Jun 21 06:28 src
+drwxr-xr-x 16 root root   4096 Jun 21 06:28 vendor
+````
+
+Aqui puedes ya ejecutar Behat para lanzar los tests y ver los resultados, con _bin/behat_:
 
 ```
-$*** bin/behat
+root@3679266af703:/usr/local/src# bin/behat
 ````
 
 Esto es lo que te mostrara:
 
-```
---- mostra TESTS ---
+```gherkin
+Feature: US 1 - Token Can Move Across the Board
+  As a player
+  I want to be able to move my token
+  So that I can get closer to the goal
+
+  Scenario: UAT1 Start the game           # features/us1-move-across-board.feature:6
+    Given the game is started             # FeatureContext::theGameIsStarted()
+    When the token is placed on the board # FeatureContext::theTokenIsPlacedOnTheBoard()
+    Then the token is on square 1         # FeatureContext::theTokenIsOnSquare()
+
+  Scenario: UAT2 Token on square 1   # features/us1-move-across-board.feature:11
+    Given the token is on square 1   # FeatureContext::theTokenIsOnSquare()
+    When the token is moved 3 spaces # FeatureContext::theTokenIsMovedSpaces()
+    Then the token is on square 4    # FeatureContext::theTokenIsOnSquare()
+
+  Scenario: UAT3 Token on square 8   # features/us1-move-across-board.feature:16
+    Given the token is on square 1   # FeatureContext::theTokenIsOnSquare()
+    When the token is moved 3 spaces # FeatureContext::theTokenIsMovedSpaces()
+    And then it is moved 4 spaces    # FeatureContext::thenItIsMovedSpaces()
+    Then the token is on square 8    # FeatureContext::theTokenIsOnSquare()
+
+Feature: US 2 - Player Can Win the Game
+  As a player
+  I want to be able to win the game
+  So that I can gloat to everyone around
+
+  Scenario: UAT1 Won the game        # features/us2-player-can-win-game.feature:6
+    Given the token is on square 97  # FeatureContext::theTokenIsOnSquare()
+    When the token is moved 3 spaces # FeatureContext::theTokenIsMovedSpaces()
+    Then the token is on square 100  # FeatureContext::theTokenIsOnSquare()
+    And the player has won the game  # FeatureContext::thePlayerHasWonTheGame()
+
+  Scenario: UAT2 Not won the game       # features/us2-player-can-win-game.feature:12
+    Given the token is on square 97     # FeatureContext::theTokenIsOnSquare()
+    When the token is moved 4 spaces    # FeatureContext::theTokenIsMovedSpaces()
+    Then the token is on square 97      # FeatureContext::theTokenIsOnSquare()
+    And the player has not won the game # FeatureContext::thePlayerHasNotWonTheGame()
+
+Feature: US 3 - Moves Are Determined By Dice Rolls
+  As a player
+  I want to move my token based on the roll of a die
+  So that there is an element of chance in the game
+
+  Scenario: UAT1 Dice result should be between 1-6 inclusive # features/us3-moves-determined-by-dice.feature:6
+    Given the game is started                                # FeatureContext::theGameIsStarted()
+    When the player rolls a die                              # FeatureContext::thePlayerRollsA()
+    Then the result should be between 1-6 inclusive          # FeatureContext::theResultShouldBeBetweenInclusive()
+
+  Scenario: UAT2 Player rolls a 4       # features/us3-moves-determined-by-dice.feature:11
+    Given the player rolls a 4          # FeatureContext::thePlayerRollsA()
+    When they move their token          # FeatureContext::theyMoveTheirToken()
+    Then the token should move 4 spaces # FeatureContext::theTokenShouldMoveSpaces()
+
+7 scenarios (7 passed)
+24 steps (24 passed)
+0m0.12s (9.36Mb)
+
 ```
 
-
-Ya tienes el entorno en funcionamiento y has podido comprobar que todos los tests estan en verde!
+Ya tienes el entorno en funcionamiento y has podido comprobar que todos los tests estan en verde! :clap:
 
 
 # Desarrollo de la Kata
@@ -77,7 +153,7 @@ Los test de aceptación de cada historia de usuario guian la realización de est
 
 ## US 1 - Token Can Move Across the Board
 
-Todo empieza con añadir en el fichero _us1-move-across-board.feature_ toda la descripción en Gherkin de esta US.
+Todo empieza con añadir en el fichero _us1-move-across-board.feature_ toda la descripción en Gherkin de esta primera US.
 
 ````gherkin
 Feature: US 1 - Token Can Move Across the Board
@@ -108,9 +184,9 @@ A partir de aqui Behat con:
 $ behat/bin --append-snippets
 ````
 
-Se generan los metodos dentro de _bootstrap/FeatureContext.php_ que corresponden a cada linea _Given/When/And/Then_ de cada UAT.
+Se generan automaticamente los metodos dentro de _bootstrap/FeatureContext.php_ que corresponden a cada linea _Given/When/And/Then_ de cada UAT. Los metodos estan vacios, solo actuan como punto de entrada, y se trata de ir un por uno aplicando el código necesario para pasar el test.
 
-El proceso es ejecutar _bin/behat_ y todos los test en rojo, procedo a resolver UAT por UAT implementando el minimo código para pasar el test, tener test en verde y refactorizar. 
+El proceso es ejecutar _bin/behat_ ver todos los test en rojo, proceder a resolver UAT por UAT implementando el minimo código para pasar el test, tener test en verde y refactorizar. 
 
 Estare repitiendo este ciclo durante las 3 user stories, y creando 3 ficheros .feature con las user stories y los test de aceptación, para que Behat los procese para ir ejecuntando los tests.
 
@@ -144,7 +220,7 @@ public function theTokenIsPlacedOnTheBoard()
 
 Aqui la cosa ya se pone más interesante, _Player_ cobra más importancia en los test de aceptación de esta user story, por lo que decido crear una class _Player_ que es la que mantiene el _estado_ del jugador y a su vez lo mueve por el tablero mediante _Token_ Esto implica tambien refatorizar _Game_ para que haga una instancia de _Player_ en vez de _Token_ A partir de este momento el juego arranca con un _Player_ que a su vez dispone de su propio _Token_
 
-_Game_ adquiere tambien más importancia concentro en ella las _reglas del juego_ 
+_Game_ adquiere tambien más importancia concentro en ella las _reglas del juego_, el check de si el jugador gana o no.
 
 ````php
 namespace SnakesAndLadders;
@@ -180,7 +256,7 @@ Esta combinación de _Game_/_Player_/_Token_ permite resolver los 2 test de acep
 
 ## US 3 - Moves Are Determined By Dice Rolls
 
-En este paso creo una nueva class _Dice_. Separo de esta manera la responsabilidad de generar una tirada de dados. _player_ en este momento es la class que asume el control de _Token_ y de _Dice_
+En este paso creo una nueva class _Dice_. Separo de esta manera la responsabilidad de generar una tirada de dados. _Player_ en este momento es la class que asume el control de _Token_ y de _Dice_
 
 ````php
 namespace SnakesAndLadders;
@@ -196,7 +272,7 @@ class Dice
 }
 ````
 
-Con esta _Dice_ donde el metodo _roll()_ devuleve un 4 ya se cumplen las condiciones de los tests relativas a los dados:
+Con esta _Dice_ donde el metodo _roll()_ devuelve un 4 ya se cumplen las condiciones de los tests relativas a los dados:
 * Then the result should be between 1-6 inclusive
 * Given the player rolls a 4
 
@@ -313,14 +389,14 @@ Feature: US 3 - Moves Are Determined By Dice Rolls
 
 * Commits más atomicos, a nivel de cada test de aceptación para tener más visibilidad en los cambios que implica un test concreto
 
-* Refactorizar _Player_ y _Token_ desdel punto de vista que tienen algunas cosas parecidas y _Player_ ahora puede que incluso más responsabilidades de las que debe gestionar. La gestión del movimiento es un poco reiterativa entre ambas clases esto deberia desacoplarse.
+* Refactorizar _Player_ y _Token_ desdel punto de vista que tienen algunas cosas parecidas y _Player_ ahora puede que incluso más responsabilidades de las que debe gestionar. La gestión del movimiento es un poco reiterativa entre ambas clases esto deberia revisarse.
 
 * Añadir test unitarios para algunos metodos en los que se realizan calculos concretos, como por ejemplo para cubrir el _moveTo()_ de _Player_
 
 
 # Pasos más adelante
 
-* Terminar de implementar la lógica del juego, por ejemplo el control de si el token de un jugador cae en una casilla de escalera o de serpiente.
+* No esta detallado en las historias de usuario de la Kata pero se podria terminar de implementar la lógica del juego, por ejemplo el control de si el token de un jugador cae en una casilla de escalera o de serpiente.
 
 * Añadir la posibilidad de múltiples jugadores. Esto teniendo la class _Player_ que gestiona individualmente a un jugador y su _Token_ sería viable gestionando, por ejemplo, en _Game_ a un array de objetos _Player_.
 
@@ -329,11 +405,11 @@ Feature: US 3 - Moves Are Determined By Dice Rolls
 
 # Conclusiones finales
 
-Me ha gustado esta kata. Obligarse a desarrollar unas funcionalidades sin salirse de lo que se pide en las historias de usuario y generando test de aceptación que dejan cubiertas todas la peticiones.
+Me ha gustado esta kata. Obligarse a desarrollar unas funcionalidades sin salirse de lo que se pide en las historias de usuario y generando test de aceptación que dejan cubiertas todas la peticiones de negocio.
 
-Ha sido mi primera vez con Behat y un proceso muy basico de BDD. Así que me he concentrado en el uso de Behat a nivel metodologia, y en ir creando código que pasara los test de aceptación y ya esta. Tenia visto Behat, Gherkin y el concepto de tests orientado a funcionalidades pero no habia trabajado hasta ahora con el. Ver que la Kata apuntaba a este uso fue un reto.
+Ha sido mi primera vez con Behat y un proceso muy basico de BDD. Así que me he concentrado en el uso de Behat a nivel metodologia, y en ir creando código que pasara los test de aceptación y ya esta. Tenia visto Behat, Gherkin y el concepto de tests orientado a funcionalidades pero no habia trabajado hasta ahora con el. Ver que la Kata apuntaba a este uso fue un reto interesante.
 
 Cuando quieras podemos conversar en más detalle del enfoque de la Kata y ver en directo el funcionamiento del código :)
 
-Entregada esta versión en PHP, creo que ahora y con más tiempo intentare repetirla con C# ;) y SpecFlow, para comparar enfoques y porque una buena manera de aprender un nuevo lenguaje es hacerlo a la vez guiado por tests. 
+Entregada esta versión en PHP creo que fuera de este proceso de selección y con más tiempo intentare repetirla con C# y SpecFlow, para comparar enfoques y sobretodo porque una buena manera de aprender un nuevo lenguaje es hacerlo a la vez guiado por tests. 
 
