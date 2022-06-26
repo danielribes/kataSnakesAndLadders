@@ -6,7 +6,7 @@ use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use PHPUnit\Framework\Assert;
 
-use SnakesAndLadders\Lib\Game;
+use SnakesAndLadders\Lib\GameEngine;
 use SnakesAndLadders\Lib\Token;
 use SnakesAndLadders\Lib\Player;
 use SnakesAndLadders\Lib\Dice;
@@ -35,7 +35,7 @@ class FeatureContext implements Context
      */
     public function theGameIsStarted()
     {
-        $this->game = new Game();
+        $this->game = new GameEngine();
     }
 
     /**
