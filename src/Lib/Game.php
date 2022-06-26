@@ -3,9 +3,9 @@
  * This class setup the game and have the rules
  */
 
-namespace SnakesAndLadders;
+namespace SnakesAndLadders\Lib;
 
-use SnakesAndLadders\Player;
+use SnakesAndLadders\Lib\Player;
 
 class Game 
 {

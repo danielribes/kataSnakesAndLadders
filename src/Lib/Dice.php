@@ -1,7 +1,7 @@
 <?php
 
 
-namespace SnakesAndLadders;
+namespace SnakesAndLadders\Lib;
 
 class Dice 
 {

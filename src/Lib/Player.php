@@ -3,10 +3,10 @@
  * This class has the player state
  */
  
-namespace SnakesAndLadders;
+namespace SnakesAndLadders\Lib;
 
-use SnakesAndLadders\Token;
-use SnakesAndLadders\Dice;
+use SnakesAndLadders\Lib\Token;
+use SnakesAndLadders\Lib\Dice;
 
 class Player
 {

@@ -3,7 +3,7 @@
  * This class moves the player token
  */
 
-namespace SnakesAndLadders;
+namespace SnakesAndLadders\Lib;
 
 class Token
 {

@@ -6,10 +6,10 @@ use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use PHPUnit\Framework\Assert;
 
-use SnakesAndLadders\Game;
-use SnakesAndLadders\Token;
-use SnakesAndLadders\Player;
-use SnakesAndLadders\Dice;
+use SnakesAndLadders\Lib\Game;
+use SnakesAndLadders\Lib\Token;
+use SnakesAndLadders\Lib\Player;
+use SnakesAndLadders\Lib\Dice;
 
 /**
  * Defines application features from the specific context.
@@ -43,7 +43,7 @@ class FeatureContext implements Context
      */
     public function theTokenIsPlacedOnTheBoard()
     {
-        Assert::assertInstanceOf("SnakesAndLadders\\Token", $this->game->player->getToken());
+        Assert::assertInstanceOf("SnakesAndLadders\\Lib\\Token", $this->game->player->getToken());
     }
 
     /**
@@ -115,7 +115,7 @@ class FeatureContext implements Context
 
         if($arg1 == 'die')
         {
-            Assert::assertInstanceOf("SnakesAndLadders\\Dice", $this->game->player->getDice());
+            Assert::assertInstanceOf("SnakesAndLadders\\Lib\\Dice", $this->game->player->getDice());
 
             $this->diceresult = $this->game->player->rollsADie();
         }
