@@ -15,7 +15,9 @@
             "email": "daniel@danielribes.com"
         }
     ],
-    "require": {},
+    "require": {
+        "symfony/console": "^5.4"
+    },
     "autoload": {
         "psr-4": {
             "SnakesAndLadders\\": "src/"

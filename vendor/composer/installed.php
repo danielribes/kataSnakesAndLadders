@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => '90bcb976ed668e8e69391faf30b22dfb5697b285',
+    'reference' => '9c63ab3323e39ffa834981f46be6ba7310eb4aa3',
     'name' => 'danielribes/snakes-and-ladders',
   ),
   'versions' => 
@@ -45,7 +45,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => '90bcb976ed668e8e69391faf30b22dfb5697b285',
+      'reference' => '9c63ab3323e39ffa834981f46be6ba7310eb4aa3',
     ),
     'doctrine/instantiator' => 
     array (
@@ -376,12 +376,12 @@
     ),
     'symfony/console' => 
     array (
-      'pretty_version' => 'v5.4.9',
-      'version' => '5.4.9.0',
+      'pretty_version' => 'v5.4.10',
+      'version' => '5.4.10.0',
       'aliases' => 
       array (
       ),
-      'reference' => '829d5d1bf60b2efeb0887b7436873becc71a45eb',
+      'reference' => '4d671ab4ddac94ee439ea73649c69d9d200b5000',
     ),
     'symfony/dependency-injection' => 
     array (
