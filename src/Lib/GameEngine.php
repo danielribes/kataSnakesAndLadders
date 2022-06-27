@@ -10,23 +10,25 @@ use SnakesAndLadders\Lib\Player;
 class GameEngine 
 {
     public $token;
+    public $player;
+
 
     public function __construct() 
     {
         $this->player = new Player();          
     }
 
-    public function checkPlayer($player)
+    public function checkPlayer()
     {
-        $position = $player->getActualSquare();
+        $position = $this->player->getActualSquare();
         if($position == 100)
         {
-            $player->setWin();
+            $this->player->setWin();
         }
 
         if($position > 100)
         {
-            $player->moveToSquare($player->getOldPosition());
+            $this->player->moveToSquare($this->player->getOldPosition());
         }
     }
 

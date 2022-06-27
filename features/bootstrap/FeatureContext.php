@@ -55,7 +55,7 @@ class FeatureContext implements Context
         {
             $this->theGameIsStarted();
             $this->game->player->moveTo($arg1-1);
-            $this->game->checkPlayer($this->game->player);
+            $this->game->checkPlayer();
         }
 
         Assert::assertEquals($arg1, $this->game->player->getActualSquare());
@@ -67,7 +67,7 @@ class FeatureContext implements Context
     public function theTokenIsMovedSpaces($arg1)
     {
         $this->game->player->moveTo($arg1);
-        $this->game->checkPlayer($this->game->player);
+        $this->game->checkPlayer();
     }
 
     /**
