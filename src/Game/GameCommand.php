@@ -76,7 +76,7 @@ class GameCommand extends Command
 
 
     /**
-     * Undocumented function
+     * Helper function to update player position
      *
      * @param DisplayStatus $status
      * @param [type] $squares
