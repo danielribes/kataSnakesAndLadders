@@ -4,13 +4,13 @@ Esta es mi solución a la Kata SnakesAndLadders de VoxelGroup (https://github.co
 
 Esta Kata describe el funcionamiento del juego Snakes And Ladders, pero expone unos requerimientos muy concretos:
 
-* Desarrollar la logica del juego de manera independiente al frontend que finalmente se pueda usar. Basicamente nos estan pidiendo crear una libreria backend, con la logica del juego, que se pueda acoplar a diferentes escenarios de uso.
+* Desarrollar la lógica del juego de manera independiente al frontend que finalmente se pueda usar. Basicamente nos estan pidiendo crear una libreria backend, con la lógica del juego, que se pueda acoplar a diferentes escenarios de uso.
 
-* Implementar la logica del juego con una primera _Feature_ que se ha divido en 3 historias de usuario. Tener en cuenta esta única _feature_ es importante porque las 3 historias de usuario que la componen se centran solo en el movimiento del jugador en el tablero, en ningún momento contemplan nada relativo a la mecanica concreta del juego, por ejemplo a que hacer cuando el jugado cae en una casilla de _serpiente_ o en una casilla de _escalera._
+* Implementar la lógica del juego con una primera _Feature_ que se ha divido en 3 historias de usuario. Tener en cuenta esta única _feature_ es importante porque las 3 historias de usuario que la componen se centran solo en el movimiento del jugador en el tablero, en ningún momento contemplan nada relativo a la mecanica concreta del juego, por ejemplo a que hacer cuando el jugado cae en una casilla de _serpiente_ o en una casilla de _escalera._
 
   En las 3 historias de usuario tampoco se hace referencia a gestionar multiples jugadores o poder jugar contra el ordenador. Esto es importante porque nos da a entender que no deberiamos desarrollar nada más alla de lo que nos detalla la _Feature._
 
-A parte de estos requerimientos, nos piden una aplicación de consola para poder probarla, usar un lenguaje orientado a objetos, y ponerle cariño :)
+A parte de estos requerimientos, nos piden una aplicación de consola para poder probarla, usar un lenguaje orientado a objetos, y ponerle cariño.
 
 Por lo tanto en esta Kata se trata basicamente de resolver de manera progresiva 3 historias de usuario a partir de sus correspondientes test de aceptación y añadir un pequeña aplicación que permita testearlas, más alla de lanzar los propios tests que acompañen a la libreria.
 
@@ -385,7 +385,7 @@ Con esta _Dice_ donde el método _roll()_ devuelve un 4 ya se cumplen las condic
 * Then the result should be between 1-6 inclusive
 * Given the player rolls a 4
 
-Pero decido refactorizarla a:
+Pero la refactorizo a:
 
 ```php
 namespace SnakesAndLadders\Lib;
@@ -401,7 +401,7 @@ class Dice
 }
 ```
 
-Ya que le da más sentido sin implicar código extra fuera de la petición de los tests de aceptación.
+Para que tenga un funcionamiento real.
 
 Sigo usando _Asserts_ de PHPUnit para controlar resultados concretos dentro de un método que responde a una acción de un test de aceptación, por ejemplo si el valor de los dados está dentro de un rango calculado:
 
@@ -496,7 +496,7 @@ Feature: US 3 - Moves Are Determined By Dice Rolls
 
 # Desarrollo de la aplicación de consola
 
-Como ya he comentado la aplicación de consola actua como un frontend para poner a prueba la libreria. Para su desarrollo he usado el componente _Console_ del Symfony Framework, que permite disponer de los elementos basicos para crear una aplicación de consola, gestiónar input via paràmetros o teclado y gestionar su output.
+Como ya he comentado la aplicación de consola actua como un frontend para poner a prueba la libreria. Para su desarrollo he usado el componente _Console_ del Symfony Framework, que permite disponer de los elementos basicos para crear una aplicación de consola, gestiónar input via parámetros o teclado y gestionar su output.
 
 En _src/Game/GameCommand.php_ se encuentra el core de la aplicación de consola. Es una class que hereda del la _class_ _Command_ de Symfony y sobreescribe dos metodos: _configure_ donde especificamos los parámetros que aceptara la aplicación, instrucciones, etc. y _execute_ que es el metodo encargado de su funcionamiento.
 
@@ -521,7 +521,7 @@ He optado por este enfoque modular porque por una parte permite separar el backe
 
 * No está detallado en las historias de usuario de la Kata pero se podría terminar de implementar la lógica del juego, por ejemplo el control de si el token de un jugador cae en una casilla de escalera o de serpiente.
 
-  Tal como esta estructurada la aplicación esto se podria hacer por ejemplo con un diccionario que almacene el valor de la casilla que es serpiente o escalera, y el valor de la casilla asociada a la que moverse. Esto podria ser un único diccionario con estos pares de valores o dos diccionarios si queremos diferenciar entre _serpientes_ y _escaleras_ a n ivel de mostrar mensajes de estado acorde a cada uno de estos tipos.
+  Tal como esta estructurada la aplicación esto se podria hacer por ejemplo con un diccionario que almacene el valor de la casilla que es serpiente o escalera, y el valor de la casilla asociada a la que moverse. Esto podria ser un único diccionario con estos pares de valores o dos diccionarios si queremos diferenciar entre _serpientes_ y _escaleras_ a nivel de mostrar mensajes de estado acorde a cada uno de estos tipos.
 
   Esto con PHP seria realmente un array de arrays de dos columnas, por ejemplo para controlar casillas de _serpientes_:
 
@@ -536,21 +536,22 @@ He optado por este enfoque modular porque por una parte permite separar el backe
             ]
    
   ```
-La gestión de esta lógica estaria 
+  
+  La gestión de esta lógica estaria dentro de _GameEngine_ y en el metodo _updatePlayer_ de _src/Game/GameCommand.php_ gestionariamos los mensajes a mostrar si el jugador esta en una de estas casillas.
 
+* Tampoco esta detallado el poder jugar contra el ordenador ypor lo tanto que cuando lanzamos **php game.php** el ordenador vaya jugando hasta ganar o perder.
+
+  Pero esto una vez más seria implementar un loop central en la aplicación de consola que vaya jugando hasta resolver la partida. Esto nos llevaria a poder usar más de un jugador.
+
+  Tener multiples jugadores es relativamente fácil de gestionar disponiendo de class que separan responsabilidades como tenemos ahora. Por ejemplo en _src/LibGameEngine.php_ en vez de instancia un único _Player_ podriamos gestionar un array de objetos tipo _Player_ cada uno para un jugador.
+
+  La ventaja es que ya partimos de un código de componenetes desacoplados y con una cobertura minima de test que nos permitiria ir creciendo con un cierto orden ... pero calro siempre que tengamos una _feature_ que lo indique :)
+
+## Otros aspectos a tener en cuenta
 
 * Commits más atómicos, a nivel de cada test de aceptación para tener más visibilidad en los cambios que implica un test concreto
 
-* Refactorizar _Player_ y _Token_ desdel punto de vista que tienen algunas cosas parecidas y _Player_ ahora puede que incluso más responsabilidades de las que debe gestionar. La gestión del movimiento es un poco reiterativa entre ambas clases esto deberia revisarse.
-
-* Añadir test unitarios para algunos métodos en los que se realizan cálculos concretos, como por ejemplo para cubrir el _moveTo()_ de _Player_
-
-
-# Pasos más adelante
-
-
-
-* Añadir la posibilidad de múltiples jugadores. Esto teniendo la class _Player_ que gestiona individualmente a un jugador y su _Token_ sería viable gestionando, por ejemplo, en _Game_ a un array de objetos _Player_.
+* Añadir test unitarios para algunos métodos en los que se realizan cálculos concretos, como por ejemplo para cubrir el _moveTo()_ de _Player_ y para cubrir la parte de la aplicación de consola.
 
 * Explorar el uso de PHPSpec para usar la metodología de _especificación mediante ejemplos_ que encaja con el uso de Behat y permite un proceso completo de BDD. Pero para eso ya quizás mejor pasarse a C# ;) y explorar SpecFlow 
 
