@@ -35,6 +35,8 @@ class Player
     {
         $newposition = $this->token->getPosition() + $positions;
         $this->token->setPosition($newposition);
+
+        return $newposition;
     }
 
     public function setWin()

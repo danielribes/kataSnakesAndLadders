@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 
-use SnakesAndLadders\Game\DataPersists;
+use SnakesAndLadders\Game\DisplayStatus;
 use SnakesAndLadders\Lib\GameEngine;
 
 class GameCommand extends Command
@@ -48,72 +48,45 @@ class GameCommand extends Command
      * @return int
      */
     protected function execute(InputInterface $input, OutputInterface $output)
-    {
+    { 
         $this->game = new GameEngine();
-        $this->showStatus($this->game, $output);
-        
+        $status = new DisplayStatus($this->game, $output);
+        $status->addMessage('Player at square: 1');
+
         // Manage --moveto option
         if($input->getOption('moveto'))
         {
             $squares = $input->getOption('moveto');
-            $this->moveto($squares, $output);
+            $this->updatePlayer($status, $squares);
         }
 
         // Manage --dicerolls option
         if($input->getOption('dicerolls'))
         {
-            $this->diceRolls($output);
+            $squares = $this->game->player->rollsADie();
+            $status->addMessage("Dice show: $squares");
+            $this->updatePlayer($status, $squares);
         }
 
         $this->game->checkPlayer();
-        $this->showStatus($this->game, $output);
+        $status->show();
 
         return 0;
     }
 
 
     /**
-     * Dice rolls and move the player
+     * Undocumented function
      *
+     * @param DisplayStatus $status
+     * @param [type] $squares
      * @return void
      */
-    private function diceRolls($output)
+    private function updatePlayer(DisplayStatus $status, $squares)
     {
-        $squares = $this->game->player->rollsADie();
-        $this->moveto($squares, $output);
-    }
-
-
-    /**
-     * Move token to specific square
-     * 
-     * @param [type] $input
-     * @param [type] $output
-     * @return void
-     */
-    private function moveto($squares, $output)
-    {
-        $output->writeln("Player move token $squares squares");
-        $this->game->player->moveTo($squares);
-    }
-
-
-    /**
-     * showStatus
-     *
-     * @param GameEngine $game
-     * @param [type] $output
-     * @return void
-     */
-    private function showStatus(GameEngine $game, $output)
-    {
-        $square = $game->player->getActualSquare();
-        $output->writeln("Player at square: $square");
-
-        if($this->game->player->getWin())
-        {
-            $output->writeln("Player WIN!!!!");
-        }
+        $status->addMessage("Player move token $squares squares");
+        $position = $this->game->player->moveTo($squares);
+        $status->addMessage("Player at square: $position");
     }
 
 }
