@@ -536,10 +536,10 @@ He optado por este enfoque modular porque por una parte permite separar el backe
             ]
    
   ```
-  
+
   La gestión de esta lógica estaria dentro de _GameEngine_ y en el metodo _updatePlayer_ de _src/Game/GameCommand.php_ gestionariamos los mensajes a mostrar si el jugador esta en una de estas casillas.
 
-* Tampoco esta detallado el poder jugar contra el ordenador ypor lo tanto que cuando lanzamos **php game.php** el ordenador vaya jugando hasta ganar o perder.
+* Tampoco esta detallado el poder jugar contra el ordenador y por lo tanto que cuando lanzamos **php game.php** el ordenador vaya jugando hasta ganar o perder.
 
   Pero esto una vez más seria implementar un loop central en la aplicación de consola que vaya jugando hasta resolver la partida. Esto nos llevaria a poder usar más de un jugador.
 
