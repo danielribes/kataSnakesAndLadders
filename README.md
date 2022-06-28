@@ -2,7 +2,17 @@
 
 Esta es mi solución a la Kata SnakesAndLadders de VoxelGroup (https://github.com/VoxelGroup/Katas.Code.SnakesAndLadders)
 
-En esta Kata se trata de resolver de manera progresiva 3 historias de usuario a partir de sus correspondientes test de aceptación.
+Esta Kata describe el funcionamiento del juego Snakes And Ladders, pero expone unos requerimientos muy concretos:
+
+* Desarrollar la logica del juego de manera independiente al frontend que finalmente se pueda usar. Basicamente nos estan pidiendo crear una libreria backend, con la logica del juego, que se pueda acoplar a diferentes escenarios de uso.
+
+* Implementar la logica del juego con una primera _Feature_ que se ha divido en 3 historias de usuario. Tener en cuenta esta única _feature_ es importante porque las 3 historias de usuario que la componen se centran solo en el movimiento del jugador en el tablero, en ningún momento contemplan nada relativo a la mecanica concreta del juego, por ejemplo a que hacer cuando el jugado cae en una casilla de _serpiente_ o en una casilla de _escalera._
+
+  En las 3 historias de usuario tampoco se hace referencia a gestionar multiples jugadores o poder jugar contra el ordenador. Esto es importante porque nos da a entender que no deberiamos desarrollar nada más alla de lo que nos detalla la _Feature._
+
+A parte de estos requerimientos, nos piden una aplicación de consola para poder probarla, usar un lenguaje orientado a objetos, y ponerle cariño :)
+
+Por lo tanto en esta Kata se trata basicamente de resolver de manera progresiva 3 historias de usuario a partir de sus correspondientes test de aceptación y añadir un pequeña aplicación que permita testearlas, más alla de lanzar los propios tests que acompañen a la libreria.
 
 # Enfoque adoptado
 
@@ -16,10 +26,23 @@ También he usado **PHPUnit** que es el framework habitual en PHP para test unit
 
 Investigando por el lado de C# he visto que hay algunos frameworks similares como por ejemplo SpecFlow, pero en este momento me sentía más cómodo en PHP asi que he ido adelante con PHP, Behat y PHPUnit.
 
-He realizado un commit de cada historia de usuario, aunque para ser sinceros, visto ahora en perspectiva quizás hubiera sido mejor ser más atómico con los commits para tener cada test de aceptación en uno de ellos.
+Mientras he desarrollado las funcionalidades basicas, guiado por los tests de aceptación, he realizado un commit de cada historia de usuario, aunque para ser sinceros, visto ahora en perspectiva quizás hubiera sido mejor ser más atómico con los commits para tener cada test de aceptación en uno de ellos.
 
 La solución usa además Composer que es un gestor de dependencias con el que se instalan todos los frameworks necesarios y se facilita el enrutamiento de todos los componentes. Una especie de Nuget del mundo PHP.
 
+# Estructura del proyecto
+
+Mi solución tiene dos partes facilmente identificables viendo el código.
+
+* La libreria que implenta las funcionalidades detalladas por las 3 historias de usuario y sus tests
+
+* Una pequeña aplicación de consola que haciendo uso de los componentes de la libreria permite jugar simulando las acciones descritas por cada US
+
+Todo el código se encuentra dentro de _src:_
+
+* **src/Game** contiene las 2 classes que forman el core de la aplicación de consola
+
+* **src/Lib** contiene las 4 classes que forman el core del backend, de la libreria y que se ajustan a cada US y sus correspondientes UAT
 # Ejecutar el proyecto 
 
 Para su funcionamiento, a parte de las dependencias especificas del proyecto y del uso de composer es necesario disponer de PHP, mínimo la versión CLI de PHP para ejecutarlo en un terminal.
@@ -62,19 +85,23 @@ root@3679266af703:/usr/local/src# ls -la
 Verás algo así:
 
 ````
-drwxr-xr-x  1 root root   4096 Jun 21 06:28 .
-drwxr-xr-x  1 root root   4096 Jun  9 23:03 ..
--rw-r--r--  1 root root   6148 Jun 21 06:28 .DS_Store
-drwxr-xr-x  8 root root   4096 Jun 21 06:28 .git
--rw-r--r--  1 root root  14196 Jun 21 06:28 README.md
-drwxr-xr-x  2 root root   4096 Jun 21 06:28 bin
--rw-r--r--  1 root root    596 Jun 21 06:28 composer.json
--rw-r--r--  1 root root 139376 Jun 21 06:28 composer.lock
-drwxr-xr-x  3 root root   4096 Jun 21 06:28 features
--rw-r--r--  1 root root    988 Jun 21 06:28 phpunit.xml
-drwxr-xr-x  2 root root   4096 Jun 21 06:28 src
-drwxr-xr-x 16 root root   4096 Jun 21 06:28 vendor
+drwxr-xr-x  15 root  root     480 28 jun 01:41 .
+drwxr-xr-x  13 root  root     416 28 jun 01:40 ..
+drwxr-xr-x  14 root  root     448 28 jun 02:26 .git
+-rw-r--r--   1 root  root       9 28 jun 01:40 .gitignore
+-rw-r--r--   1 root  root     387 26 jun 20:28 Dockerfile
+-rw-r--r--   1 root  root   20579 28 jun 03:10 README.md
+drwxr-xr-x   6 root  root     192 26 jun 20:28 bin
+-rw-r--r--   1 root  root     635 26 jun 20:43 composer.json
+-rw-r--r--   1 root  root  139382 26 jun 20:43 composer.lock
+-rw-r--r--   1 root  root     120 26 jun 20:28 docker-compose.yml
+drwxr-xr-x   7 root  root     224 26 jun 20:28 features
+-rw-r--r--   1 root  root     345 26 jun 21:04 game.php
+-rw-r--r--   1 root  root     988 26 jun 20:28 phpunit.xml
+drwxr-xr-x   5 root  root     160 28 jun 01:40 src
+drwxr-xr-x  17 root  root     544 26 jun 20:43 vendor
 ````
+## Lanzar los tests 
 
 Aquí puedes ya ejecutar Behat para lanzar los tests y ver los resultados, con _bin/behat_:
 
@@ -144,8 +171,88 @@ Feature: US 3 - Moves Are Determined By Dice Rolls
 
 ```
 
+Indicando que la Libreria desarrollada pasa todo los test de cada US. Observa que por cada linea de cada test de aceptación nos indica a su derecha que metodo de _features/bootstrap/FeaturesContext.php_ implementa el código del test.
+
 Ya tienes el entorno en funcionamiento y has podido comprobar que todos los tests estan en verde! :clap:
 
+## Ejecutar la aplicación 
+
+En la raiz del proyecto tienes **game.php** que es el punto de entrada a la aplicación de consola, se ejecuta como un script php:
+
+```php
+$ php game.php 
+```
+
+Te mostrara:
+
+```
+Player at square: 1
+```
+
+Indicando que se ha iniciado el juego
+
+**game.php** acepta dos parametros de linea de comandos, **--diceroll** y **--moveto**:
+
+* **--dicerolls** para indicar una tirada de dados. La aplicación genera una tirada aleatoria y indica el movimiento realizado por el jugador:
+
+```php
+$ php game.php --dicerolls 
+```
+
+Te mostrara algo así:
+
+```
+Player at square: 1
+Dice show: 3
+Player move token 3 squares
+Player at square: 4
+```
+
+* **--moveto=[valor]** para indicar un avance concreto de casillas. Esto te permite mover el token a una casilla concreta para comprobar que se mueve correctamente y por ejemplo simular que el jugador gana el juego. Para este parametro es obligatorio indicar un _valor_:
+
+```php
+$ php game.php --moveto=43
+```
+
+Te mostrara:
+
+```
+Player at square: 1
+Player move token 43 squares
+Player at square: 44
+```
+
+Por ejemplo movemos el jugador 99 casillas, como sale de la 1, lo hacemos ganar:
+
+```php
+$ php game.php --moveto=99
+```
+
+Te mostrara:
+
+```
+Player at square: 1
+Player move token 99 squares
+Player at square: 100
+Player WIN!!!!
+```
+
+Y finalmente podemos combinar los dos parametros, de manera que llevamos el jugador a un avance concreto y luego lo movemos con los dados:
+
+```php
+$ php game.php --moveto=32 --dicerolls
+```
+
+Te mostrara algo así:
+
+```
+Player at square: 1
+Player move token 32 squares
+Player at square: 33
+Dice show: 4
+Player move token 4 squares
+Player at square: 37
+```
 
 # Desarrollo de la Kata
 
@@ -190,7 +297,7 @@ El proceso es ejecutar _bin/behat_ ver todos los test en rojo, proceder a resolv
 
 Estare repitiendo este ciclo durante las 3 user stories, y creando 3 ficheros _.feature_ con las user stories y los test de aceptación, para que Behat los procese para ir ejecuntando los tests.
 
-En esta primera US veo necesario tener ya la class _Game_ que da sentido a _Given the game is started_ y será el punto de inicio de cualquier partida. Aparece también la class _Token_ con la que moverse por el tablero.
+En esta primera US veo necesario tener ya la class _GameEngine_ que da sentido a _Given the game is started_ y será el punto de inicio de cualquier partida. Aparece también la class _Token_ con la que moverse por el tablero.
 
 El juego y primer UAT empieza con:
 
@@ -200,7 +307,7 @@ El juego y primer UAT empieza con:
 */
 public function theGameIsStarted()
 {
-    $this->game = new Game();
+    $this->game = new GameEngine();
 }
 
 `````
@@ -213,53 +320,55 @@ Para cumplir con _When the token is placed on the board_ hago un Assert (de PHPU
 */
 public function theTokenIsPlacedOnTheBoard()
 {
-    Assert::assertInstanceOf("SnakesAndLadders\\Token", $this->game->token);
+    Assert::assertInstanceOf("SnakesAndLadders\\Lib\\Token", $this->game->player->getToken());
 }
 ````
 ## US 2 - Player Can Win the Game
 
-Aquí la cosa ya se pone más interesante, _Player_ cobra más importancia en los test de aceptación de esta user story, por lo que decido crear una class _Player_ que es la que mantiene el _estado_ del jugador y a su vez lo mueve por el tablero mediante _Token_ Esto implica también refactorizar _Game_ para que haga una instancia de _Player_ en vez de _Token_ A partir de este momento el juego arranca con un _Player_ que a su vez dispone de su propio _Token_
+Aquí la cosa ya se pone más interesante, _Player_ cobra más importancia en los test de aceptación de esta user story, por lo que decido crear una class _Player_ que es la que mantiene el _estado_ del jugador y a su vez lo mueve por el tablero mediante _Token_ Esto implica también refactorizar _GameEngine_ para que haga una instancia de _Player_ en vez de _Token_ A partir de este momento el juego arranca con un _Player_ que a su vez dispone de su propio _Token_
 
-_Game_ adquiere también más importancia concentro en ella las _reglas del juego_, el check de si el jugador gana o no.
+_GameEngine_ adquiere también más importancia concentro en ella las _reglas del juego_, el check de si el jugador gana o no.
 
 ````php
-namespace SnakesAndLadders;
+namespace SnakesAndLadders\Lib;
 
-use SnakesAndLadders\Player;
+use SnakesAndLadders\Lib\Player;
 
-class Game 
+class GameEngine 
 {
     public $token;
+    public $player;
+
 
     public function __construct() 
     {
         $this->player = new Player();          
     }
 
-    public function checkPlayer($player)
+    public function checkPlayer()
     {
-        $position = $player->getActualSquare();
+        $position = $this->player->getActualSquare();
         if($position == 100)
         {
-            $player->setWin();
+            $this->player->setWin();
         }
 
         if($position > 100)
         {
-            $player->moveToSquare($player->getOldPosition());
+            $this->player->moveToSquare($this->player->getOldPosition());
         }
     }
 }
 ````
 
-Esta combinación de _Game_/_Player_/_Token_ permite resolver los 2 test de aceptación y a la vez mantener responsabilidades separadas, mientras el resto de tests de la user story 1 se mantienen también en verde.
+Esta combinación de _GameEngine_/_Player_/_Token_ permite resolver los 2 test de aceptación y a la vez mantener responsabilidades separadas, mientras el resto de tests de la user story 1 se mantienen también en verde.
 
 ## US 3 - Moves Are Determined By Dice Rolls
 
 En este paso creo una nueva class _Dice_. Separo de esta manera la responsabilidad de generar una tirada de dados. _Player_ en este momento es la class que asume el control de _Token_ y de _Dice_
 
 ````php
-namespace SnakesAndLadders;
+namespace SnakesAndLadders\Lib;
 
 class Dice 
 {
@@ -278,8 +387,8 @@ Con esta _Dice_ donde el método _roll()_ devuelve un 4 ya se cumplen las condic
 
 Pero decido refactorizarla a:
 
-````php
-namespace SnakesAndLadders;
+```php
+namespace SnakesAndLadders\Lib;
 
 class Dice 
 {
@@ -290,7 +399,7 @@ class Dice
     }
 
 }
-````
+```
 
 Ya que le da más sentido sin implicar código extra fuera de la petición de los tests de aceptación.
 
@@ -385,7 +494,50 @@ Feature: US 3 - Moves Are Determined By Dice Rolls
 0m0.45s (9.43Mb)
 ````
 
+# Desarrollo de la aplicación de consola
+
+Como ya he comentado la aplicación de consola actua como un frontend para poner a prueba la libreria. Para su desarrollo he usado el componente _Console_ del Symfony Framework, que permite disponer de los elementos basicos para crear una aplicación de consola, gestiónar input via paràmetros o teclado y gestionar su output.
+
+En _src/Game/GameCommand.php_ se encuentra el core de la aplicación de consola. Es una class que hereda del la _class_ _Command_ de Symfony y sobreescribe dos metodos: _configure_ donde especificamos los parámetros que aceptara la aplicación, instrucciones, etc. y _execute_ que es el metodo encargado de su funcionamiento.
+
+Aquí tambien he añadido el metodo _updatePlayer_ a modo de _helper_ para evitar código redundante dentro de _execute_ y a la vez permitir una mejor gestión de la actualización de movimiento del jugador.
+
+Es importante destacar que esta class esta ya haciendo uso de la libreria con el core del juego. Fijate que en la línea 15 requiere el uso del componente principal de la libreria:
+
+```php
+use SnakesAndLadders\Lib\GameEngine;
+```
+Con este componente ya puede iniciar el juego, jugador, moverlo y lanzar dados.
+
+Esta parte de la aplicación se apoya tambien en la class _src/Game/DisplayStatus.php_ que tiene como única responsabilidad mostrar los mensajes en consola que va generado la aplicación. Esto nos permite una gestión separada de mensajes y juego y un codigo más ordenado.
+
+He enfocado esta _class_ con un array que va acumulando los mensajes y que dispone de un metodo para mostrarlos finalmente todos y el resultado final de juego en función del _estado_ del jugador.
+
+El resto del código usado que implementa todas las funcionalidades requeridas por las 3 US esta en _src/Lib_. Los test que se le aplican nos permiten confirmar que cumple con los requisitos.
+
+He optado por este enfoque modular porque por una parte permite separar el backend del frontend (uno de los requerimientos observados), por otra parte el código queda más desacoplado, con responsabilidades muy concretas para cada componente (_class_) lo que facilita los test y el mantenimiento.
+
 # Posibles Mejoras
+
+* No está detallado en las historias de usuario de la Kata pero se podría terminar de implementar la lógica del juego, por ejemplo el control de si el token de un jugador cae en una casilla de escalera o de serpiente.
+
+  Tal como esta estructurada la aplicación esto se podria hacer por ejemplo con un diccionario que almacene el valor de la casilla que es serpiente o escalera, y el valor de la casilla asociada a la que moverse. Esto podria ser un único diccionario con estos pares de valores o dos diccionarios si queremos diferenciar entre _serpientes_ y _escaleras_ a n ivel de mostrar mensajes de estado acorde a cada uno de estos tipos.
+
+  Esto con PHP seria realmente un array de arrays de dos columnas, por ejemplo para controlar casillas de _serpientes_:
+
+  ```php
+  $snakes = [
+            [6,16],
+            [11,49],
+            [19,62],
+            [25,46],
+            [60,64],
+            (...)
+            ]
+   
+  ```
+La gestión de esta lógica estaria 
+
 
 * Commits más atómicos, a nivel de cada test de aceptación para tener más visibilidad en los cambios que implica un test concreto
 
@@ -396,7 +548,7 @@ Feature: US 3 - Moves Are Determined By Dice Rolls
 
 # Pasos más adelante
 
-* No está detallado en las historias de usuario de la Kata pero se podría terminar de implementar la lógica del juego, por ejemplo el control de si el token de un jugador cae en una casilla de escalera o de serpiente.
+
 
 * Añadir la posibilidad de múltiples jugadores. Esto teniendo la class _Player_ que gestiona individualmente a un jugador y su _Token_ sería viable gestionando, por ejemplo, en _Game_ a un array de objetos _Player_.
 
