@@ -7,7 +7,8 @@
 namespace SnakesAndLadders\Game;
 
 use Symfony\Component\Console\Output\OutputInterface;
-use SnakesAndLadders\Lib\GameEngine;
+use SnakesAndLadders\Lib\Game;
+use SnakesAndLadders\Lib\Player;
 
 class DisplayStatus
 {
@@ -15,7 +16,7 @@ class DisplayStatus
     private $game;
     private $output;
 
-    public function __construct(GameEngine $game, OutputInterface $output)
+    public function __construct(Game $game, OutputInterface $output)
     {
         $this->messages = [];
         $this->game = $game;
@@ -40,14 +41,14 @@ class DisplayStatus
      *
      * @return void
      */
-    public function show()
+    public function show(Player $player)
     {
         foreach($this->messages as $message)
         {
             $this->output->writeln($message);
         }
 
-        if($this->game->player->getWin())
+        if($player->getWin())
         {
             $this->output->writeln("Player WIN!!!!");
         }

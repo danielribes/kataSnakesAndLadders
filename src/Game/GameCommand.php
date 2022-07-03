@@ -10,14 +10,12 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 
-use SnakesAndLadders\Game\DisplayStatus;
-use SnakesAndLadders\Lib\GameEngine;
+use SnakesAndLadders\Lib\Game;
 
 class GameCommand extends Command
 {
-    private $game;
-
     /**
      * configure command
      */
@@ -27,16 +25,10 @@ class GameCommand extends Command
              ->setDescription('SnakesAndLadders game frontend to play and test the SnakesAndLadders Library from Voxel Kata')
              ->setHelp("Usage: see README.md\n")
              ->addOption(
-                'dicerolls',
+                'bysteps',
                 null,
                 InputOption::VALUE_NONE,
-                'Dice rolls and move the player'
-             )
-             ->addOption(
-                'moveto',
-                null,
-                InputOption::VALUE_REQUIRED,
-                'Move Token Across the Board'
+                'Play step by step throwing the dice'
              );
     }
 
@@ -49,44 +41,46 @@ class GameCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     { 
-        $this->game = new GameEngine();
-        $status = new DisplayStatus($this->game, $output);
-        $status->addMessage('Player at square: 1');
+        $game = new Game();
+        $player = $game->addPlayer();
+        $playerposition = $player->getPosition();
+        $output->writeln("Player at square: $playerposition");
 
-        // Manage --moveto option
-        if($input->getOption('moveto'))
+        if($input->getOption('bysteps'))
         {
-            $squares = $input->getOption('moveto');
-            $this->updatePlayer($status, $squares);
+            $helper = $this->getHelper('question');
+            $question = new ConfirmationQuestion('Roll Dice ? [y/n] ', false, '/^(y|j)/i');
         }
 
-        // Manage --dicerolls option
-        if($input->getOption('dicerolls'))
+        while(!$player->getWin())
+        {            
+            $squares = $player->rollsADie();
+            $output->writeln("\nDice show: $squares");
+            $player->moveToken($squares);
+            $game->checkPlayer($player);
+            if($player->checkOutOfBounds())
+            {
+                $output->writeln("Player can't move");
+            } else {
+                $output->writeln("Player move token $squares squares");
+            }
+            $position = $player->getPosition();
+            $output->writeln("Player at square: $position");
+
+            if($input->getOption('bysteps') && (!$player->getWin()))
+            {
+                if (!$helper->ask($input, $output, $question)) 
+                {
+                    exit;
+                }
+            }
+        }
+        
+        if($player->getWin())
         {
-            $squares = $this->game->player->rollsADie();
-            $status->addMessage("Dice show: $squares");
-            $this->updatePlayer($status, $squares);
+            $output->writeln("Player WIN!!!!");
         }
 
-        $this->game->checkPlayer();
-        $status->show();
-
-        return 0;
+        return 0;       
     }
-
-
-    /**
-     * Helper function to update player position
-     *
-     * @param DisplayStatus $status
-     * @param [type] $squares
-     * @return void
-     */
-    private function updatePlayer(DisplayStatus $status, $squares)
-    {
-        $status->addMessage("Player move token $squares squares");
-        $position = $this->game->player->moveTo($squares);
-        $status->addMessage("Player at square: $position");
-    }
-
 }

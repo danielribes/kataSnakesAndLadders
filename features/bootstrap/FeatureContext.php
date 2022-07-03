@@ -6,10 +6,7 @@ use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use PHPUnit\Framework\Assert;
 
-use SnakesAndLadders\Lib\GameEngine;
-use SnakesAndLadders\Lib\Token;
-use SnakesAndLadders\Lib\Player;
-use SnakesAndLadders\Lib\Dice;
+use SnakesAndLadders\Lib\Game;
 
 /**
  * Defines application features from the specific context.
@@ -17,6 +14,7 @@ use SnakesAndLadders\Lib\Dice;
 class FeatureContext implements Context
 {
     private $game;
+    private $player;
     private $diceresult;
 
     /**
@@ -35,7 +33,8 @@ class FeatureContext implements Context
      */
     public function theGameIsStarted()
     {
-        $this->game = new GameEngine();
+        $this->game = new Game();
+        $this->player = $this->game->addPlayer();
     }
 
     /**
@@ -43,7 +42,7 @@ class FeatureContext implements Context
      */
     public function theTokenIsPlacedOnTheBoard()
     {
-        Assert::assertInstanceOf("SnakesAndLadders\\Lib\\Token", $this->game->player->getToken());
+        Assert::assertEquals('1', $this->player->getPosition());
     }
 
     /**
@@ -54,20 +53,20 @@ class FeatureContext implements Context
         if(!isset($this->game))
         {
             $this->theGameIsStarted();
-            $this->game->player->moveTo($arg1-1);
-            $this->game->checkPlayer();
-        }
-
-        Assert::assertEquals($arg1, $this->game->player->getActualSquare());
+            $this->player->moveToken($arg1-1);  
+        } 
+        
+        Assert::assertEquals($arg1, $this->player->getPosition());
     }
+
 
     /**
      * @When the token is moved :arg1 spaces
      */
     public function theTokenIsMovedSpaces($arg1)
     {
-        $this->game->player->moveTo($arg1);
-        $this->game->checkPlayer();
+        $this->player->moveToken($arg1);
+        $this->game->checkPlayer($this->player);
     }
 
     /**
@@ -75,7 +74,7 @@ class FeatureContext implements Context
      */
     public function thenItIsMovedSpaces($arg1)
     {
-        $this->game->player->moveTo($arg1);
+        $this->player->moveToken($arg1);
     }
 
     /**
@@ -83,7 +82,7 @@ class FeatureContext implements Context
      */
     public function thePlayerHasWonTheGame()
     {
-        Assert::assertTrue($this->game->player->getWin());
+        Assert::assertTrue($this->player->getWin());
     }
 
     /**
@@ -91,7 +90,7 @@ class FeatureContext implements Context
      */
     public function thePlayerHasNotWonTheGame()
     {
-        Assert::assertFalse($this->game->player->getWin());
+        Assert::assertFalse($this->player->getWin());
     }
 
     /**
@@ -115,37 +114,35 @@ class FeatureContext implements Context
 
         if($arg1 == 'die')
         {
-            Assert::assertInstanceOf("SnakesAndLadders\\Lib\\Dice", $this->game->player->getDice());
-
-            $this->diceresult = $this->game->player->rollsADie();
+            $this->diceresult = $this->player->rollsADie();
         }
 
         if($arg1 != 'die')
         {
             $this->diceresult = $arg1;
         }
- 
     }
+
 
     /**
      * @When they move their token
      */
     public function theyMoveTheirToken()
     {
-        $this->game->player->moveTo($this->diceresult);
+        $this->player->moveToken($this->diceresult);    
     }
+
 
     /**
      * @Then the token should move :arg1 spaces
      */
     public function theTokenShouldMoveSpaces($arg1)
     {
-        $old = $this->game->player->getOldPosition();
-        $new = $this->game->player->getActualSquare();
+        $old = $this->player->getOldPosition();
+        $new = $this->player->getPosition();
 
         $rslt = $new-$old;
 
         Assert::assertEquals($arg1, $rslt);
-        
     }
 }

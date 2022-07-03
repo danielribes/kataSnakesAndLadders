@@ -5,33 +5,46 @@
 
 namespace SnakesAndLadders\Lib;
 
-class Token
+final class Token
 {
     private $position;
     private $oldposition;
 
-    public function __construct($firstposition)
+    public function __construct()
     {
-        $this->position = $firstposition;
+        $this->position = 1;
     }
 
-    public function moveTo($positions)
-    {
-        $this->position += $positions;
 
-    }
-
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
     public function getPosition()
     {
         return $this->position;
     }
 
+
+    /**
+     * Undocumented function
+     *
+     * @param [type] $newposition
+     * @return void
+     */
     public function setPosition($newposition)
     {
         $this->oldposition = $this->position;
         $this->position = $newposition;
     }
 
+
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
     public function getOldPosition()
     {
         return $this->oldposition;

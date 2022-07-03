@@ -3,9 +3,14 @@
 
 namespace SnakesAndLadders\Lib;
 
-class Dice 
+final class Dice 
 {
 
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
     public function roll()
     {
         return random_int(1,6);
