@@ -48,7 +48,7 @@ final class Player
 
 
     /**
-     * Undocumented function
+     * Move Token to dice value
      *
      * @param [type] $positions
      * @return void
@@ -85,7 +85,7 @@ final class Player
 
 
     /**
-     * Undocumented function
+     * Move Token to specific square
      *
      * @param [type] $square
      * @return void
@@ -97,7 +97,7 @@ final class Player
 
     
     /**
-     * Undocumented function
+     * Get old player position
      *
      * @return void
      */
@@ -108,7 +108,7 @@ final class Player
 
 
     /**
-     * Undocumented function
+     * Player Rolls dices
      *
      * @return void
      */
@@ -119,7 +119,7 @@ final class Player
 
 
     /**
-     * Undocumented function
+     * Get player token position
      *
      * @return void
      */

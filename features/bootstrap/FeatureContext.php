@@ -66,7 +66,7 @@ class FeatureContext implements Context
     public function theTokenIsMovedSpaces($arg1)
     {
         $this->player->moveToken($arg1);
-        $this->game->checkPlayer($this->player);
+        $this->game->checkPlayerStatus($this->player);
     }
 
     /**

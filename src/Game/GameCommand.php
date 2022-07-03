@@ -55,9 +55,9 @@ class GameCommand extends Command
         while(!$player->getWin())
         {            
             $squares = $player->rollsADie();
-            $output->writeln("\nDice show: $squares");
+            $output->writeln(PHP_EOL."Dice show: $squares");
             $player->moveToken($squares);
-            $game->checkPlayer($player);
+            $game->checkPlayerStatus($player);
             if($player->checkOutOfBounds())
             {
                 $output->writeln("Player can't move");
@@ -66,6 +66,12 @@ class GameCommand extends Command
             }
             $position = $player->getPosition();
             $output->writeln("Player at square: $position");
+            $square = $game->checkPlayerPosition($player);
+            if($square['type'] != 'normal')
+            {
+                $message = 'Player at '.$square['type'].' square, moved to new position '.$square['position'];
+                $output->writeln($message);
+            }
 
             if($input->getOption('bysteps') && (!$player->getWin()))
             {
@@ -83,4 +89,5 @@ class GameCommand extends Command
 
         return 0;       
     }
+
 }

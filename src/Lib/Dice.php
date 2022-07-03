@@ -1,4 +1,7 @@
 <?php
+/**
+ * A little Dice class
+ */
 
 
 namespace SnakesAndLadders\Lib;
@@ -7,7 +10,7 @@ final class Dice
 {
 
     /**
-     * Undocumented function
+     * Roll dice!
      *
      * @return void
      */

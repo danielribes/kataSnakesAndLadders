@@ -17,7 +17,7 @@ final class Token
 
 
     /**
-     * Undocumented function
+     * Get token position
      *
      * @return void
      */
@@ -28,7 +28,7 @@ final class Token
 
 
     /**
-     * Undocumented function
+     * Set token position
      *
      * @param [type] $newposition
      * @return void
@@ -41,7 +41,7 @@ final class Token
 
 
     /**
-     * Undocumented function
+     * Get old token position
      *
      * @return void
      */
