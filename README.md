@@ -114,7 +114,7 @@ public function addPlayer()
 }
 ```
 
-Y en _Player_ se trabaja con el _Token_ y con _Dice_ via dependencias encapsulando tambien el acceso directo a propiedades de _Token_ y de _Player_ y no como ocurria en la versión anterior de la aplicación de consola y en el cógigo de los test, en que estaba todo más acoplado como este ejemplo:
+Y en _Player_ se trabaja con el _Token_ y con _Dice_ via dependencias encapsulando tambien el acceso directo a propiedades de _Token_ y de _Player_ y no como ocurria en la versión anterior de la aplicación de consola y en el código de los test, en que estaba todo más acoplado como este ejemplo:
 
 ```php
 if($this->game->player->getWin())
