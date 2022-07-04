@@ -100,7 +100,7 @@ Es fácil leer lo que hace:
 * Entra en un bucle que se mantiene mientras el jugado no ha ganado
   * En este bucle tira los dados, mueve el token, comprueba status jugador y tipo de casilla en la que se encuentra y si el parametro _--bysteps_ esta en uso espera a que le digas continuar o cancelar el juego.
   * Esto se repite hasta que el jugador gana
-  * Se van mostrando por consola los mensakes que informan del valor de los dados, movimento y tipo casilla en la que se encuentra el jugador.
+  * Se van mostrando por consola los mensajes que informan del valor de los dados, movimento y tipo casilla en la que se encuentra el jugador.
 * Si el jugador gana, se termina el bucle y se felicita al jugador
 
 Todo con solo cargar la _class src/Lib/Game.php_ 
@@ -114,7 +114,7 @@ public function addPlayer()
 }
 ```
 
-Y en _Player_ se trabaja con el _Token_ y con _Dice_ via dependencias encapsulando tambien el acceso directo a propiedades de _Token_ y de _Player_ y no como ocurria en la versión anterior de la aplicación de consola y en el cógigo de los test en que estaba todo más acoplado como este ejemplo:
+Y en _Player_ se trabaja con el _Token_ y con _Dice_ via dependencias encapsulando tambien el acceso directo a propiedades de _Token_ y de _Player_ y no como ocurria en la versión anterior de la aplicación de consola y en el cógigo de los test, en que estaba todo más acoplado como este ejemplo:
 
 ```php
 if($this->game->player->getWin())
@@ -135,7 +135,7 @@ En este aspecto es más parecido a _SpecFlow_ que a _Fluent Assertions_ donde cr
 
 En la salida de los tests tambien indica el nombre del metodo que resuelva cada sentencia de un escenario.
 
-Es cierto que tambien puede configurase _Behat_ para usar _contextos_ diferentes y de esta manera no queda todo en un solo _bootstrap/FeatureContext.php_ sino que se puede repartir en varios ficheros lo que permitiria, por ejemplo, tene historias de usuario en contextos diferentes o tipos de test diferentes para diferentes contextos. Pero en esta Kata no he querido complicarme a este punto y por eso estan todos en _bootstrap/FeatureContext.php_
+Es cierto que tambien puede configurase _Behat_ para usar _contextos_ diferentes y de esta manera no queda todo en un solo _bootstrap/FeatureContext.php_ sino que se puede repartir en varios ficheros lo que permitiria, por ejemplo, tener historias de usuario en contextos diferentes o tipos de test diferentes para diferentes contextos. Pero en esta Kata no he querido complicarme a este punto y por eso estan todos en _bootstrap/FeatureContext.php_
 
 Por otra parte el código de alguno de los test tambien ha mejorado con las refactorizaciones en la Libreria y cosas que antes estaban así:
 
