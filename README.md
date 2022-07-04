@@ -2,48 +2,169 @@
 
 Esta es mi solución a la Kata SnakesAndLadders de VoxelGroup (https://github.com/VoxelGroup/Katas.Code.SnakesAndLadders)
 
-Esta Kata describe el funcionamiento del juego Snakes And Ladders, pero expone unos requerimientos muy concretos:
+Esta Kata describe el funcionamiento del juego Snakes And Ladders con unos requerimientos muy concretos.
 
-* Desarrollar la lógica del juego de manera independiente al frontend que finalmente se pueda usar. Basicamente nos estan pidiendo crear una libreria backend, con la lógica del juego, que se pueda acoplar a diferentes escenarios de uso.
+En la primera versión que realize de la Kata (que se puede ver _viajando_ a los commits más antiguos) me centre demasiado en resolver la parte de tests de historias de usuario con Behat.
 
-* Implementar la lógica del juego con una primera _Feature_ que se ha divido en 3 historias de usuario. Tener en cuenta esta única _feature_ es importante porque las 3 historias de usuario que la componen se centran solo en el movimiento del jugador en el tablero, en ningún momento contemplan nada relativo a la mecanica concreta del juego, por ejemplo a que hacer cuando el jugado cae en una casilla de _serpiente_ o en una casilla de _escalera._
+Centrarme tanto en esta parte para mostrar mi capacidad de trabajo con este tipo de tests, con la poca experiencia que tenia en esto en ese momento, fue un error que derivo en falta de atención a otros aspectos importantes de los requerimientos de la Kata y en general de la solución aportada.
 
-  En las 3 historias de usuario tampoco se hace referencia a gestionar multiples jugadores o poder jugar contra el ordenador. Esto es importante porque nos da a entender que no deberiamos desarrollar nada más alla de lo que nos detalla la _Feature._
+Esto se tradujo en:
 
-A parte de estos requerimientos, nos piden una aplicación de consola para poder probarla, usar un lenguaje orientado a objetos, y ponerle cariño.
+* Una aplicación de consola sin la mecánica del juego esperada. Solo permitia mover el token a una posoción concreta, o lanzar dados para comprobar que se realizaban los movimentos correctos en una tirada, pero sin avanzar en el juego hasta ganar.
 
-Por lo tanto en esta Kata se trata basicamente de resolver de manera progresiva 3 historias de usuario a partir de sus correspondientes test de aceptación y añadir un pequeña aplicación que permita testearlas, más alla de lanzar los propios tests que acompañen a la libreria.
+* Un bug en la visualización del numero de casilla, en los movimientos directos a una posición, que no mostraba el valor actual si no el sumado.
 
-# Enfoque adoptado
+* Código redundate entre la _class Player_ y la _class Token_ ademas de instanciar objetos en el constructor de _Player_ en ves de inyectar dependencias correctamente.
 
-Aunque llevo unos mesos trasteando con C# por mi cuenta he preferido plantear la kata con **PHP** porque en estos momentos es mi lenguaje del día a día y me siento más comodo con él.
+* Un motor de juego centrado en mostrar los movimientos detallados en los tests pero que no permitia realmente jugar según la mecanica del juego
 
-Teniendo en cuenta que mandan las historias de usuario y que estas ya están descritas usando lenguaje **Gherkin** me ha parecido que lo más eficaz era usar un enfoque de testing basado en **BDD (Behavior Drive Development)** en el que las necesidades de negocio marcan el flujo de tests con los que se va diseñando la aplicación.
+* Incluir los binarios del vendor/bin creado por _Composer_ en vez de mantener solo un composer.lock para fijar las versiones a usar y que las dependencias se instalaran con un __composer update_ en el momento de desplegar el código para probarlo.
 
-En PHP esto se puede llevar a cabo usando el framework **Behat,** que trabaja a partir de historias de usuario (Features) y test de aceptación (Scenarios) descritos con Gherkin.
+* Hacer un poco de _sobre ingenieria__ con una _class DisplayStatus__ para mostrar los mensajes del juego cuando se podian mostrar directamente porque la dinamica del motor de juego no tenia tampoco tanta complejidad como para requerir una _class_ especializada en los mensajes a terminal.
 
-También he usado **PHPUnit** que es el framework habitual en PHP para test unitarios y TDD. En este caso Behat guía el desarrollo de cada Feature y PHPUnit me da soporte en aplicar tests a determinados elementos.
+Visto todo esto no me gustaba que esta solución a la Kata quedase así con todos estos errores, por este motivo lo que ves aquí es una nueva versión revisada, más acorde con los requerimientos finales y con un código más cuidado.
 
-Investigando por el lado de C# he visto que hay algunos frameworks similares como por ejemplo SpecFlow, pero en este momento me sentía más cómodo en PHP asi que he ido adelante con PHP, Behat y PHPUnit.
+Actualmente todos estos problemas se han resuelto:
 
-Mientras he desarrollado las funcionalidades basicas, guiado por los tests de aceptación, he realizado un commit de cada historia de usuario, aunque para ser sinceros, visto ahora en perspectiva quizás hubiera sido mejor ser más atómico con los commits para tener cada test de aceptación en uno de ellos.
+* La aplicación de consola juega sola hasta el final, mostrando cada tirada de dado, su correspondiente movimiento y si el jugador cae en un casilla de _Serpiente_ o de _Escalera_ lo muestra en la consola y gestiona el movimento a la casilla final que le corresponda.
 
-La solución usa además Composer que es un gestor de dependencias con el que se instalan todos los frameworks necesarios y se facilita el enrutamiento de todos los componentes. Una especie de Nuget del mundo PHP.
+* No hay opciones raras com la antigua _--moveto_ para mover directamente a una casilla sin tirar el dado. En esta versión solo esta disponible el parametro _--bysteps_ para indicar que queremos que el juego vaya paso a paso, que a cada tirada de dado ejecute el movimiento y se pare a la espera de continuar. Sin esta opción activa el ordenador juega solo de golpe todos los movimientos necesarios hasta ganar y terminar la partida.
 
-# Estructura del proyecto
+* Se ha refactorizado la _class Player_ para inyectar dependencias y eliminar código redundante entre ella y _Token_
 
-Mi solución tiene dos partes facilmente identificables viendo el código.
+* Se ha refactorizado la _class Game_ para añadir un metodo _factory_ que es el único responsable de crear un jugador y inyectar dependencias a _Player_, se ha refactorizado el código que gestiona la comprobación del estado y posición del jugador y se le ha añadido el control de las casillas de _serpientes_ y _escaleras_
 
-* La libreria que implenta las funcionalidades detalladas por las 3 historias de usuario y sus tests
+* Todos estos cambios en el código de la Libreria tambien han significado cambios a mejor en el código que ejecuta los test.
 
-* Una pequeña aplicación de consola que haciendo uso de los componentes de la libreria permite jugar simulando las acciones descritas por cada US
+* En la aplicación de consola tambien se ha realizado una refactorización importante, con las mejoras en la Libreria del juego y una mejor gestión de la inyección de dependencias, el código que ejecuta el juego se puede leer claramente, muy semantico, a parte que ahora permite jugar hasta finalizar la partida.
 
-Todo el código se encuentra dentro de _src:_
+Este es el metodo _execute_ de la _class GameComman.php_ que es el motor de juego de la aplicación.
 
-* **src/Game** contiene las 2 classes que forman el core de la aplicación de consola
+```php
+protected function execute(InputInterface $input, OutputInterface $output)
+    { 
+        $game = new Game();
+        $player = $game->addPlayer();
+        $playerposition = $player->getPosition();
+        $output->writeln("Player at square: $playerposition");
 
-* **src/Lib** contiene las 4 classes que forman el core del backend, de la libreria y que se ajustan a cada US y sus correspondientes UAT
+        if($input->getOption('bysteps'))
+        {
+            $helper = $this->getHelper('question');
+            $question = new ConfirmationQuestion('Roll Dice ? [y/n] ', false, '/^(y|j)/i');
+        }
+
+        while(!$player->getWin())
+        {            
+            $squares = $player->rollsADie();
+            $output->writeln(PHP_EOL."Dice show: $squares");
+            $player->moveToken($squares);
+            $game->checkPlayerStatus($player);
+            if($player->checkOutOfBounds())
+            {
+                $output->writeln("Player can't move");
+            } else {
+                $output->writeln("Player move token $squares squares");
+            }
+            $position = $player->getPosition();
+            $output->writeln("Player at square: $position");
+            $square = $game->checkPlayerPosition($player);
+            if($square['type'] != 'normal')
+            {
+                $message = 'Player at '.$square['type'].' square, moved to new position '.$square['position'];
+                $output->writeln($message);
+            }
+
+            if($input->getOption('bysteps') && (!$player->getWin()))
+            {
+                if (!$helper->ask($input, $output, $question)) 
+                {
+                    exit;
+                }
+            }
+        }
+        
+        if($player->getWin())
+        {
+            $output->writeln("Player WIN!!!!");
+        }
+
+        return 0;       
+    }
+```
+
+Es fácil leer lo que hace:
+
+* Crea un nuevo juego
+* Añade un jugador al juego y muestra su posición inicial
+* Entra en un bucle que se mantiene mientras el jugado no ha ganado
+  * En este bucle tira los dados, mueve el token, comprueba status jugador y tipo de casilla en la que se encuentra y si el parametro _--bysteps_ esta en uso espera a que le digas continuar o cancelar el juego.
+  * Esto se repite hasta que el jugador gana
+  * Se van mostrando por consola los mensakes que informan del valor de los dados, movimento y tipo casilla en la que se encuentra el jugador.
+* Si el jugador gana, se termina el bucle y se felicita al jugador
+
+Todo con solo cargar la _class src/Lib/Game.php_ 
+
+En esta _class_ se crea al jugador con el metodo _addPlayer()_:
+
+```php
+public function addPlayer()
+{
+    return new Player(new Token, new Dice);  
+}
+```
+
+Y en _Player_ se trabaja con el _Token_ y con _Dice_ via dependencias encapsulando tambien el acceso directo a propiedades de _Token_ y de _Player_ y no como ocurria en la versión anterior de la aplicación de consola y en el cógigo de los test en que estaba todo más acoplado como este ejemplo:
+
+```php
+if($this->game->player->getWin())
+```
+
+Pero ahora hace lo mismo con menos acoplamiento:
+
+```php
+if($player->getWin())
+```
+# Un apunte sobre los tests
+
+Usando _Behat_ el código de los test va todo en _bootstrap/FeatureContext.php_, localizar las sentencias _Give/When/Then/And_ debe hacerse mirando los comentarios. _Behat_  usa _PHPDOC_ para indicar cada sentencia y su parametrización.
+
+Luego genera nombres de metodos de acuerdo a la sentencia correspondiente.
+
+En este aspecto es más parecido a _SpecFlow_ que a _Fluent Assertions_ donde creo que se crean metodos que encadenan los _Give/When/Then/And_. Behat se apoya más en los comentarios para identificar y controlar el comportamiento de cada sentencia.
+
+En la salida de los tests tambien indica el nombre del metodo que resuelva cada sentencia de un escenario.
+
+Es cierto que tambien puede configurase _Behat_ para usar _contextos_ diferentes y de esta manera no queda todo en un solo _bootstrap/FeatureContext.php_ sino que se puede repartir en varios ficheros lo que permitiria, por ejemplo, tene historias de usuario en contextos diferentes o tipos de test diferentes para diferentes contextos. Pero en esta Kata no he querido complicarme a este punto y por eso estan todos en _bootstrap/FeatureContext.php_
+
+Por otra parte el código de alguno de los test tambien ha mejorado con las refactorizaciones en la Libreria y cosas que antes estaban así:
+
+```php
+    /**
+     * @When the token is placed on the board
+     */
+    public function theTokenIsPlacedOnTheBoard()
+    {
+        Assert::assertInstanceOf("SnakesAndLadders\\Token", $this->game->token);
+    }
+```
+Ahora no necesitan comprobar instancias y acceden a quien tiene la responsabilidad real de ese recurso:
+
+```php
+    /**
+     * @When the token is placed on the board
+     */
+    public function theTokenIsPlacedOnTheBoard()
+    {
+        Assert::assertEquals('1', $this->player->getPosition());
+    }
+```
+
 # Ejecutar el proyecto 
+
+Para desplegar el código y poder ejecutar el juego y los tests, el funcionamiento no ha variado mucho, basicamente hay que añadir el _composer update_ para instalar las dependencias.
+
+En la ejecución del juego si que encontraras más diferencias. Todas estas novedades las detallo a continuación.
 
 Para su funcionamiento, a parte de las dependencias especificas del proyecto y del uso de composer es necesario disponer de PHP, mínimo la versión CLI de PHP para ejecutarlo en un terminal.
 
@@ -59,10 +180,10 @@ En tu terminal clona este repositorio con:
 $ git clone https://github.com/danielribes/kataSnakesAndLadders.git
 ```
 
-Muevete dentro del directorio _kataSnakesAndLadders_ y ejecuta:
+Muevete dentro del directorio _kataSnakesAndLadders_ y ejecuta estos dos comandos de Docker, para evitar que use la imagen de la versión anterior, por si la tenias aun cacheada:
 
 ```
-$ docker compose up --build
+$ docker-compose build --no-cache && docker-compose up -d --force-recreate
 ```
 
 Esto inicializara el contenedor, puede tardar unos minutos, luego ejecuta:
@@ -85,25 +206,33 @@ root@3679266af703:/usr/local/src# ls -la
 Verás algo así:
 
 ````
-drwxr-xr-x  15 root  root     480 28 jun 01:41 .
-drwxr-xr-x  13 root  root     416 28 jun 01:40 ..
-drwxr-xr-x  14 root  root     448 28 jun 02:26 .git
--rw-r--r--   1 root  root       9 28 jun 01:40 .gitignore
--rw-r--r--   1 root  root     387 26 jun 20:28 Dockerfile
--rw-r--r--   1 root  root   20579 28 jun 03:10 README.md
-drwxr-xr-x   6 root  root     192 26 jun 20:28 bin
--rw-r--r--   1 root  root     635 26 jun 20:43 composer.json
--rw-r--r--   1 root  root  139382 26 jun 20:43 composer.lock
--rw-r--r--   1 root  root     120 26 jun 20:28 docker-compose.yml
-drwxr-xr-x   7 root  root     224 26 jun 20:28 features
--rw-r--r--   1 root  root     345 26 jun 21:04 game.php
--rw-r--r--   1 root  root     988 26 jun 20:28 phpunit.xml
-drwxr-xr-x   5 root  root     160 28 jun 01:40 src
-drwxr-xr-x  17 root  root     544 26 jun 20:43 vendor
+drwxr-xr-x 1 root root   4096 Jul  4 00:35 .
+drwxr-xr-x 1 root root   4096 Jun 23 08:43 ..
+drwxr-xr-x 8 root root   4096 Jul  4 00:35 .git
+-rw-r--r-- 1 root root     25 Jul  4 00:35 .gitignore
+-rw-r--r-- 1 root root    387 Jul  4 00:35 Dockerfile
+-rw-r--r-- 1 root root  26294 Jul  4 00:35 README.md
+-rw-r--r-- 1 root root    635 Jul  4 00:35 composer.json
+-rw-r--r-- 1 root root 139382 Jul  4 00:35 composer.lock
+-rw-r--r-- 1 root root    120 Jul  4 00:35 docker-compose.yml
+drwxr-xr-x 3 root root   4096 Jul  4 00:35 features
+-rw-r--r-- 1 root root    345 Jul  4 00:35 game.php
+-rw-r--r-- 1 root root    988 Jul  4 00:35 phpunit.xml
+drwxr-xr-x 4 root root   4096 Jul  4 00:35 src
 ````
+
+## Instalar las dependencias
+
+Aquí debes ejecutar:
+```
+root@3679266af703:/usr/local/src# composer update
+```
+
+Esto instalara todas las dependencias necesarias para ejecutar el juego y los tests. Cuando finalize puedes lanzar los test para confirmar que esta todo ok.
+
 ## Lanzar los tests 
 
-Aquí puedes ya ejecutar Behat para lanzar los tests y ver los resultados, con _bin/behat_:
+Para lanzar los tests y ver los resultados con _bin/behat_:
 
 ```
 root@3679266af703:/usr/local/src# bin/behat
@@ -177,82 +306,114 @@ Ya tienes el entorno en funcionamiento y has podido comprobar que todos los test
 
 ## Ejecutar la aplicación 
 
-En la raiz del proyecto tienes **game.php** que es el punto de entrada a la aplicación de consola, se ejecuta como un script php:
+En la raiz del proyecto tienes **game.php** que es el punto de entrada a la aplicación de consola, se ejecuta como un script php.
 
-```php
-$ php game.php 
-```
-
-Te mostrara:
+El juego ahora funciona al completo, y solo. Cuando ejecutes el comando _php game.php_ empezara y continuara realizando lanzamientos de dados y movimiento del jugador hasta hacerlo ganar.
 
 ```
-Player at square: 1
+root@3679266af703:/usr/local/src# php game.php 
 ```
 
-Indicando que se ha iniciado el juego
-
-**game.php** acepta dos parametros de linea de comandos, **--diceroll** y **--moveto**:
-
-* **--dicerolls** para indicar una tirada de dados. La aplicación genera una tirada aleatoria y indica el movimiento realizado por el jugador:
-
-```php
-$ php game.php --dicerolls 
-```
-
-Te mostrara algo así:
+El resultado sera algo parecido a esto:
 
 ```
-Player at square: 1
+Dice show: 6
+Player move token 6 squares
+Player at square: 99
+Player at snake square, moved to new position 80
+
+Dice show: 6
+Player move token 6 squares
+Player at square: 86
+
+Dice show: 4
+Player move token 4 squares
+Player at square: 90
+
+Dice show: 1
+Player move token 1 squares
+Player at square: 91
+
+Dice show: 6
+Player move token 6 squares
+Player at square: 97
+
+Dice show: 6
+Player can't move
+Player at square: 97
+
+Dice show: 4
+Player can't move
+Player at square: 97
+
+Dice show: 6
+Player can't move
+Player at square: 97
+
+Dice show: 5
+Player can't move
+Player at square: 97
+
 Dice show: 3
 Player move token 3 squares
-Player at square: 4
-```
-
-* **--moveto=[valor]** para indicar un avance concreto de casillas. Esto te permite mover el token a una casilla concreta para comprobar que se mueve correctamente y por ejemplo simular que el jugador gana el juego. Para este parametro es obligatorio indicar un _valor_:
-
-```php
-$ php game.php --moveto=43
-```
-
-Te mostrara:
-
-```
-Player at square: 1
-Player move token 43 squares
-Player at square: 44
-```
-
-Por ejemplo movemos el jugador 99 casillas, como sale de la 1, lo hacemos ganar:
-
-```php
-$ php game.php --moveto=99
-```
-
-Te mostrara:
-
-```
-Player at square: 1
-Player move token 99 squares
 Player at square: 100
 Player WIN!!!!
 ```
 
-Y finalmente podemos combinar los dos parametros, de manera que llevamos el jugador a un avance concreto y luego lo movemos con los dados:
+Tambien tienes el parametro __--bysteps__. Usando este parametro el juego, por cada lanzamiento de dados y movimiento, te preguntara si deseas continuar. 
 
-```php
-$ php game.php --moveto=32 --dicerolls
-```
-
-Te mostrara algo así:
+Pulsado la tecla Y + [intro] continuas, y pulsando la tecla N +[intro] el juego termina en ese punto. Esto te permite ver paso a paso com va jugando.
 
 ```
+root@3679266af703:/usr/local/src# php game.php --bysteps
+
 Player at square: 1
-Player move token 32 squares
-Player at square: 33
-Dice show: 4
-Player move token 4 squares
-Player at square: 37
+
+Dice show: 5
+Player move token 5 squares
+Player at square: 6
+Roll Dice ? [y/n] y
 ```
+
+La aplicación ahora controla si el token del jugador cae en una de las casillas de _Serpientes_ o _Escaleras_:
+
+````
+Dice show: 6
+Player move token 6 squares
+Player at square: 99
+Player at snake square, moved to new position 80
+````
+
+
+# Enfoque adoptado
+
+Aunque llevo unos mesos trasteando con C# por mi cuenta he preferido plantear la kata con **PHP** porque en estos momentos es mi lenguaje del día a día y me siento más comodo con él.
+
+Teniendo en cuenta que mandan las historias de usuario y que estas ya están descritas usando lenguaje **Gherkin** me ha parecido que lo más eficaz era usar un enfoque de testing basado en **BDD (Behavior Drive Development)** en el que las necesidades de negocio marcan el flujo de tests con los que se va diseñando la aplicación.
+
+En PHP esto se puede llevar a cabo usando el framework **Behat,** que trabaja a partir de historias de usuario (Features) y test de aceptación (Scenarios) descritos con Gherkin.
+
+También he usado **PHPUnit** que es el framework habitual en PHP para test unitarios y TDD. En este caso Behat guía el desarrollo de cada Feature y PHPUnit me da soporte en aplicar tests a determinados elementos.
+
+Investigando por el lado de C# he visto que hay algunos frameworks similares como por ejemplo SpecFlow, pero en este momento me sentía más cómodo en PHP asi que he ido adelante con PHP, Behat y PHPUnit.
+
+Mientras he desarrollado las funcionalidades basicas, guiado por los tests de aceptación, he realizado un commit de cada historia de usuario, aunque para ser sinceros, visto ahora en perspectiva quizás hubiera sido mejor ser más atómico con los commits para tener cada test de aceptación en uno de ellos.
+
+La solución usa además Composer que es un gestor de dependencias con el que se instalan todos los frameworks necesarios y se facilita el enrutamiento de todos los componentes. Una especie de Nuget del mundo PHP.
+
+# Estructura del proyecto
+
+Mi solución tiene dos partes facilmente identificables viendo el código.
+
+* La libreria que implenta las funcionalidades detalladas por las 3 historias de usuario y sus tests
+
+* Una pequeña aplicación de consola que haciendo uso de los componentes de la libreria permite jugar simulando las acciones descritas por cada US
+
+Todo el código se encuentra dentro de _src:_
+
+* **src/Game** contiene la classe que forma el core de la aplicación de consola
+
+* **src/Lib** contiene las 4 classes que forman el core del backend, de la libreria y que se ajustan a cada US y sus correspondientes UAT
 
 # Desarrollo de la Kata
 
@@ -297,111 +458,19 @@ El proceso es ejecutar _bin/behat_ ver todos los test en rojo, proceder a resolv
 
 Estare repitiendo este ciclo durante las 3 user stories, y creando 3 ficheros _.feature_ con las user stories y los test de aceptación, para que Behat los procese para ir ejecuntando los tests.
 
-En esta primera US veo necesario tener ya la class _GameEngine_ que da sentido a _Given the game is started_ y será el punto de inicio de cualquier partida. Aparece también la class _Token_ con la que moverse por el tablero.
+En esta primera US veo necesario tener ya la class _Game_ que da sentido a _Given the game is started_ y será el punto de inicio de cualquier partida. Aparece también la class _Token_ con la que moverse por el tablero.
 
-El juego y primer UAT empieza con:
-
-````php
-/**
-* @Given the game is started
-*/
-public function theGameIsStarted()
-{
-    $this->game = new GameEngine();
-}
-
-`````
-
-Para cumplir con _When the token is placed on the board_ hago un Assert (de PHPUnit) para confirmar que _Game_ ha creado una instancia de _Token_. Si hay instancia de _Token_, el _Token_ esta listo y el juego ha empezado.
-
-````php
-/**
-* @When the token is placed on the board
-*/
-public function theTokenIsPlacedOnTheBoard()
-{
-    Assert::assertInstanceOf("SnakesAndLadders\\Lib\\Token", $this->game->player->getToken());
-}
-````
 ## US 2 - Player Can Win the Game
 
-Aquí la cosa ya se pone más interesante, _Player_ cobra más importancia en los test de aceptación de esta user story, por lo que decido crear una class _Player_ que es la que mantiene el _estado_ del jugador y a su vez lo mueve por el tablero mediante _Token_ Esto implica también refactorizar _GameEngine_ para que haga una instancia de _Player_ en vez de _Token_ A partir de este momento el juego arranca con un _Player_ que a su vez dispone de su propio _Token_
+Aquí la cosa ya se pone más interesante, _Player_ cobra más importancia en los test de aceptación de esta user story, por lo que decido crear una class _Player_ que es la que mantiene el _estado_ del jugador y a su vez lo mueve por el tablero mediante _Token_ Esto implica también refactorizar _Game_ para que haga una instancia de _Player_ en vez de _Token_ A partir de este momento el juego arranca con un _Player_ que a su vez dispone de su propio _Token_
 
-_GameEngine_ adquiere también más importancia concentro en ella las _reglas del juego_, el check de si el jugador gana o no.
+_Game_ adquiere también más importancia concentro en ella las _reglas del juego_, el check de si el jugador gana o no.
 
-````php
-namespace SnakesAndLadders\Lib;
-
-use SnakesAndLadders\Lib\Player;
-
-class GameEngine 
-{
-    public $token;
-    public $player;
-
-
-    public function __construct() 
-    {
-        $this->player = new Player();          
-    }
-
-    public function checkPlayer()
-    {
-        $position = $this->player->getActualSquare();
-        if($position == 100)
-        {
-            $this->player->setWin();
-        }
-
-        if($position > 100)
-        {
-            $this->player->moveToSquare($this->player->getOldPosition());
-        }
-    }
-}
-````
-
-Esta combinación de _GameEngine_/_Player_/_Token_ permite resolver los 2 test de aceptación y a la vez mantener responsabilidades separadas, mientras el resto de tests de la user story 1 se mantienen también en verde.
+Esta combinación de _Game_/_Player_/_Token_ permite resolver los 2 test de aceptación y a la vez mantener responsabilidades separadas, mientras el resto de tests de la user story 1 se mantienen también en verde.
 
 ## US 3 - Moves Are Determined By Dice Rolls
 
 En este paso creo una nueva class _Dice_. Separo de esta manera la responsabilidad de generar una tirada de dados. _Player_ en este momento es la class que asume el control de _Token_ y de _Dice_
-
-````php
-namespace SnakesAndLadders\Lib;
-
-class Dice 
-{
-
-    public function roll()
-    {
-        return 4;
-    }
-
-}
-````
-
-Con esta _Dice_ donde el método _roll()_ devuelve un 4 ya se cumplen las condiciones de los tests relativas a los dados:
-* Then the result should be between 1-6 inclusive
-* Given the player rolls a 4
-
-Pero la refactorizo a:
-
-```php
-namespace SnakesAndLadders\Lib;
-
-class Dice 
-{
-
-    public function roll()
-    {
-        return random_int(1,6);
-    }
-
-}
-```
-
-Para que tenga un funcionamiento real.
 
 Sigo usando _Asserts_ de PHPUnit para controlar resultados concretos dentro de un método que responde a una acción de un test de aceptación, por ejemplo si el valor de los dados está dentro de un rango calculado:
 
@@ -423,8 +492,8 @@ O para confirmar que realmente el movimiento del token ha correspondido con el n
  */
 public function theTokenShouldMoveSpaces($arg1)
 {
-    $old = $this->game->player->getOldPosition();
-    $new = $this->game->player->getActualSquare();
+    $old = $this->player->getOldPosition();
+    $new = $this->player->getPosition();
 
     $rslt = $new-$old;
 
@@ -435,115 +504,26 @@ public function theTokenShouldMoveSpaces($arg1)
 
 Finalizando esta tercera user story, todos los test de aceptación de cada una de ellas pasan en verde.
 
-````gherkin 
-Feature: US 1 - Token Can Move Across the Board
-  As a player
-  I want to be able to move my token
-  So that I can get closer to the goal
-
-  Scenario: UAT1 Start the game           # features/us1-move-across-board.feature:6
-    Given the game is started             # FeatureContext::theGameIsStarted()
-    When the token is placed on the board # FeatureContext::theTokenIsPlacedOnTheBoard()
-    Then the token is on square 1         # FeatureContext::theTokenIsOnSquare()
-
-  Scenario: UAT2 Token on square 1   # features/us1-move-across-board.feature:11
-    Given the token is on square 1   # FeatureContext::theTokenIsOnSquare()
-    When the token is moved 3 spaces # FeatureContext::theTokenIsMovedSpaces()
-    Then the token is on square 4    # FeatureContext::theTokenIsOnSquare()
-
-  Scenario: UAT3 Token on square 8   # features/us1-move-across-board.feature:16
-    Given the token is on square 1   # FeatureContext::theTokenIsOnSquare()
-    When the token is moved 3 spaces # FeatureContext::theTokenIsMovedSpaces()
-    And then it is moved 4 spaces    # FeatureContext::thenItIsMovedSpaces()
-    Then the token is on square 8    # FeatureContext::theTokenIsOnSquare()
-
-Feature: US 2 - Player Can Win the Game
-  As a player
-  I want to be able to win the game
-  So that I can gloat to everyone around
-
-  Scenario: UAT1 Won the game        # features/us2-player-can-win-game.feature:6
-    Given the token is on square 97  # FeatureContext::theTokenIsOnSquare()
-    When the token is moved 3 spaces # FeatureContext::theTokenIsMovedSpaces()
-    Then the token is on square 100  # FeatureContext::theTokenIsOnSquare()
-    And the player has won the game  # FeatureContext::thePlayerHasWonTheGame()
-
-  Scenario: UAT2 Not won the game       # features/us2-player-can-win-game.feature:12
-    Given the token is on square 97     # FeatureContext::theTokenIsOnSquare()
-    When the token is moved 4 spaces    # FeatureContext::theTokenIsMovedSpaces()
-    Then the token is on square 97      # FeatureContext::theTokenIsOnSquare()
-    And the player has not won the game # FeatureContext::thePlayerHasNotWonTheGame()
-
-Feature: US 3 - Moves Are Determined By Dice Rolls
-  As a player
-  I want to move my token based on the roll of a die
-  So that there is an element of chance in the game
-
-  Scenario: UAT1 Dice result should be between 1-6 inclusive # features/us3-moves-determined-by-dice.feature:6
-    Given the game is started                                # FeatureContext::theGameIsStarted()
-    When the player rolls a die                              # FeatureContext::thePlayerRollsA()
-    Then the result should be between 1-6 inclusive          # FeatureContext::theResultShouldBeBetweenInclusive()
-
-  Scenario: UAT2 Player rolls a 4       # features/us3-moves-determined-by-dice.feature:11
-    Given the player rolls a 4          # FeatureContext::thePlayerRollsA()
-    When they move their token          # FeatureContext::theyMoveTheirToken()
-    Then the token should move 4 spaces # FeatureContext::theTokenShouldMoveSpaces()
-
-7 scenarios (7 passed)
-24 steps (24 passed)
-0m0.45s (9.43Mb)
-````
-
 # Desarrollo de la aplicación de consola
 
 Como ya he comentado la aplicación de consola actua como un frontend para poner a prueba la libreria. Para su desarrollo he usado el componente _Console_ del Symfony Framework, que permite disponer de los elementos basicos para crear una aplicación de consola, gestiónar input via parámetros o teclado y gestionar su output.
 
 En _src/Game/GameCommand.php_ se encuentra el core de la aplicación de consola. Es una class que hereda del la _class_ _Command_ de Symfony y sobreescribe dos metodos: _configure_ donde especificamos los parámetros que aceptara la aplicación, instrucciones, etc. y _execute_ que es el metodo encargado de su funcionamiento.
 
-Aquí tambien he añadido el metodo _updatePlayer_ a modo de _helper_ para evitar código redundante dentro de _execute_ y a la vez permitir una mejor gestión de la actualización de movimiento del jugador.
-
 Es importante destacar que esta class esta ya haciendo uso de la libreria con el core del juego. Fijate que en la línea 15 requiere el uso del componente principal de la libreria:
 
 ```php
-use SnakesAndLadders\Lib\GameEngine;
+use SnakesAndLadders\Lib\Game;
 ```
-Con este componente ya puede iniciar el juego, jugador, moverlo y lanzar dados.
-
-Esta parte de la aplicación se apoya tambien en la class _src/Game/DisplayStatus.php_ que tiene como única responsabilidad mostrar los mensajes en consola que va generado la aplicación. Esto nos permite una gestión separada de mensajes y juego y un codigo más ordenado.
-
-He enfocado esta _class_ con un array que va acumulando los mensajes y que dispone de un metodo para mostrarlos finalmente todos y el resultado final de juego en función del _estado_ del jugador.
-
-El resto del código usado que implementa todas las funcionalidades requeridas por las 3 US esta en _src/Lib_. Los test que se le aplican nos permiten confirmar que cumple con los requisitos.
+Con este componente ya puede iniciar el juego, el jugador, moverlo y lanzar dados.
 
 He optado por este enfoque modular porque por una parte permite separar el backend del frontend (uno de los requerimientos observados), por otra parte el código queda más desacoplado, con responsabilidades muy concretas para cada componente (_class_) lo que facilita los test y el mantenimiento.
 
 # Posibles Mejoras
 
-* No está detallado en las historias de usuario de la Kata pero se podría terminar de implementar la lógica del juego, por ejemplo el control de si el token de un jugador cae en una casilla de escalera o de serpiente.
+* Tener multiples jugadores. Es relativamente fácil de gestionar disponiendo de class que separan responsabilidades como tenemos ahora. Por ejemplo en _src/Lib/Game.php_ en vez de añadir un único jugador podria preguntar por cuantos jugadores y añadirlos en un array. 
 
-  Tal como esta estructurada la aplicación esto se podria hacer por ejemplo con un diccionario que almacene el valor de la casilla que es serpiente o escalera, y el valor de la casilla asociada a la que moverse. Esto podria ser un único diccionario con estos pares de valores o dos diccionarios si queremos diferenciar entre _serpientes_ y _escaleras_ a nivel de mostrar mensajes de estado acorde a cada uno de estos tipos.
-
-  Esto con PHP seria realmente un array de arrays de dos columnas, por ejemplo para controlar casillas de _serpientes_:
-
-  ```php
-  $snakes = [
-            [6,16],
-            [11,49],
-            [19,62],
-            [25,46],
-            [60,64],
-            (...)
-            ]
-   
-  ```
-
-  La gestión de esta lógica estaria dentro de _GameEngine_ y en el metodo _updatePlayer_ de _src/Game/GameCommand.php_ gestionariamos los mensajes a mostrar si el jugador esta en una de estas casillas.
-
-* Tampoco esta detallado el poder jugar contra el ordenador y por lo tanto que cuando lanzamos **php game.php** el ordenador vaya jugando hasta ganar o perder.
-
-  Pero esto una vez más seria implementar un loop central en la aplicación de consola que vaya jugando hasta resolver la partida. Esto nos llevaria a poder usar más de un jugador.
-
-  Tener multiples jugadores es relativamente fácil de gestionar disponiendo de class que separan responsabilidades como tenemos ahora. Por ejemplo en _src/LibGameEngine.php_ en vez de instancia un único _Player_ podriamos gestionar un array de objetos tipo _Player_ cada uno para un jugador.
+  Dentro del bucle del juego, y por turnos se preguntaria por cada lanzamiento de dados de cada jugador del array.
 
   La ventaja es que ya partimos de un código de componenetes desacoplados y con una cobertura minima de test que nos permitiria ir creciendo con un cierto orden ... pero calro siempre que tengamos una _feature_ que lo indique :)
 
@@ -551,18 +531,11 @@ He optado por este enfoque modular porque por una parte permite separar el backe
 
 * Commits más atómicos, a nivel de cada test de aceptación para tener más visibilidad en los cambios que implica un test concreto
 
-* Añadir test unitarios para algunos métodos en los que se realizan cálculos concretos, como por ejemplo para cubrir el _moveTo()_ de _Player_ y para cubrir la parte de la aplicación de consola.
-
-* Explorar el uso de PHPSpec para usar la metodología de _especificación mediante ejemplos_ que encaja con el uso de Behat y permite un proceso completo de BDD. Pero para eso ya quizás mejor pasarse a C# ;) y explorar SpecFlow 
-
+* Añadir test unitarios para algunos métodos en los que se realizan cálculos concretos, como por ejemplo para cubrir el _moveToken()_ de _Player_ y para cubrir la parte de la aplicación de consola.
 
 # Conclusiones finales
 
 Me ha gustado esta kata. Obligarse a desarrollar unas funcionalidades sin salirse de lo que se pide en las historias de usuario y generando test de aceptación que dejan cubiertas todas la peticiones de negocio.
 
 Ha sido mi primera vez con Behat y un proceso muy básico de BDD. Así que me he concentrado en el uso de Behat a nivel metodología, y en ir creando código que pasara los test de aceptación y ya está. Tenía visto Behat, Gherkin y el concepto de tests orientado a funcionalidades pero no había trabajado hasta ahora con él. Ver que la Kata apuntaba a este uso fue un reto interesante.
-
-Cuando quieras podemos conversar en más detalle del enfoque de la Kata y ver en directo el funcionamiento del código :)
-
-Entregada esta versión en PHP creo que fuera de este proceso de selección y con más tiempo intentaré repetirla con C# y SpecFlow, para comparar enfoques y sobretodo porque una buena manera de aprender un nuevo lenguaje es hacerlo a la vez guiado por tests. 
 
