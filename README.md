@@ -10,11 +10,11 @@ Centrarme tanto en esta parte para mostrar mi capacidad de trabajo con este tipo
 
 Esto se tradujo en:
 
-* Una aplicación de consola sin la mecánica del juego esperada. Solo permitia mover el token a una posoción concreta, o lanzar dados para comprobar que se realizaban los movimentos correctos en una tirada, pero sin avanzar en el juego hasta ganar.
+* Una aplicación de consola sin la mecánica del juego esperada. Solo permitia mover el token a una posición concreta, o lanzar dados para comprobar que se realizaban los movimentos correctos en una tirada, pero sin avanzar en el juego hasta ganar.
 
 * Un bug en la visualización del numero de casilla, en los movimientos directos a una posición, que no mostraba el valor actual si no el sumado.
 
-* Código redundate entre la _class Player_ y la _class Token_ ademas de instanciar objetos en el constructor de _Player_ en ves de inyectar dependencias correctamente.
+* Código redundate entre la _class Player_ y la _class Token_ ademas de instanciar objetos en el constructor de _Player_ en vez de inyectar dependencias correctamente.
 
 * Un motor de juego centrado en mostrar los movimientos detallados en los tests pero que no permitia realmente jugar según la mecanica del juego
 
