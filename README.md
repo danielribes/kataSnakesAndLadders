@@ -18,9 +18,9 @@ Esto se tradujo en:
 
 * Un motor de juego centrado en mostrar los movimientos detallados en los tests pero que no permitia realmente jugar según la mecanica del juego
 
-* Incluir los binarios del vendor/bin creado por _Composer_ en vez de mantener solo un composer.lock para fijar las versiones a usar y que las dependencias se instalaran con un __composer update_ en el momento de desplegar el código para probarlo.
+* Incluir los binarios del vendor/bin creado por _Composer_ en vez de mantener solo un composer.lock para fijar las versiones a usar y que las dependencias se instalaran con un _composer update_ en el momento de desplegar el código para probarlo.
 
-* Hacer un poco de _sobre ingenieria__ con una _class DisplayStatus__ para mostrar los mensajes del juego cuando se podian mostrar directamente porque la dinamica del motor de juego no tenia tampoco tanta complejidad como para requerir una _class_ especializada en los mensajes a terminal.
+* Hacer un poco de _sobre ingenieria_ con una _class DisplayStatus_ para mostrar los mensajes del juego cuando se podian mostrar directamente porque la dinamica del motor de juego no tenia tampoco tanta complejidad como para requerir una _class_ especializada en los mensajes a terminal.
 
 Visto todo esto no me gustaba que esta solución a la Kata quedase así con todos estos errores, por este motivo lo que ves aquí es una nueva versión revisada, más acorde con los requerimientos finales y con un código más cuidado.
 
